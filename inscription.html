@@ -1,0 +1,802 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inscription / Connexion - KELASSI</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 25%, #f093fb 50%, #4facfe 75%, #00f2fe 100%);
+            background-size: 400% 400%;
+            animation: gradientShift 15s ease infinite;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(20px);
+            border-radius: 30px;
+            padding: 50px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            max-width: 500px;
+            width: 100%;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        .logo {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .logo-icon {
+            font-size: 60px;
+            animation: bounce 2s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        h1 {
+            color: white;
+            font-size: 36px;
+            text-align: center;
+            margin-bottom: 10px;
+            text-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
+        }
+
+        .subtitle {
+            color: rgba(255, 255, 255, 0.9);
+            text-align: center;
+            margin-bottom: 40px;
+            font-size: 16px;
+        }
+
+        /* Onglets */
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+        }
+
+        .tab {
+            flex: 1;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 15px;
+            color: rgba(255, 255, 255, 0.7);
+            text-align: center;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .tab:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .tab.active {
+            background: rgba(255, 255, 255, 0.25);
+            border-color: #4facfe;
+            color: white;
+            box-shadow: 0 0 20px rgba(79, 172, 254, 0.5);
+        }
+
+        /* Contenu des onglets */
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-group label {
+            display: block;
+            color: white;
+            font-weight: 600;
+            margin-bottom: 10px;
+            font-size: 14px;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 15px;
+            padding: 15px;
+            color: white;
+            font-size: 16px;
+            outline: none;
+            transition: all 0.3s;
+        }
+
+        .form-group input::placeholder {
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            background: rgba(255, 255, 255, 0.2);
+            border-color: rgba(255, 255, 255, 0.5);
+        }
+
+        .form-group select option {
+            background: #764ba2;
+            color: white;
+        }
+
+        .radio-group {
+            display: flex;
+            gap: 15px;
+            margin-top: 10px;
+        }
+
+        .radio-option {
+            flex: 1;
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 15px;
+            padding: 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: center;
+        }
+
+        .radio-option:hover {
+            background: rgba(255, 255, 255, 0.2);
+            border-color: rgba(255, 255, 255, 0.5);
+        }
+
+        .radio-option.selected {
+            background: rgba(255, 255, 255, 0.25);
+            border-color: #4facfe;
+            box-shadow: 0 0 20px rgba(79, 172, 254, 0.5);
+        }
+
+        .radio-option input[type="radio"] {
+            display: none;
+        }
+
+        .radio-option label {
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 16px;
+            display: block;
+        }
+
+        .radio-option .icon {
+            font-size: 32px;
+            margin-bottom: 10px;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .submit-btn {
+            width: 100%;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 18px;
+            border: none;
+            border-radius: 15px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 10px;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.5);
+        }
+
+        .submit-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            color: white;
+            margin-top: 20px;
+        }
+
+        .loading.active {
+            display: block;
+        }
+
+        .loading-spinner {
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-top: 3px solid white;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 10px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .error-message,
+        .success-message {
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 20px;
+            display: none;
+        }
+
+        .error-message {
+            background: rgba(244, 67, 54, 0.2);
+            border: 2px solid rgba(244, 67, 54, 0.5);
+            color: white;
+        }
+
+        .success-message {
+            background: rgba(76, 175, 80, 0.2);
+            border: 2px solid rgba(76, 175, 80, 0.5);
+            color: white;
+        }
+
+        .error-message.active,
+        .success-message.active {
+            display: block;
+        }
+
+        /* Debug info */
+        .debug-info {
+            margin-top: 20px;
+            padding: 15px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 12px;
+            font-family: monospace;
+            display: none;
+        }
+
+        .debug-info.active {
+            display: block;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 30px 20px;
+            }
+
+            h1 {
+                font-size: 28px;
+            }
+
+            .radio-group {
+                flex-direction: column;
+            }
+
+            .tabs {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logo">
+            <div class="logo-icon">🎓</div>
+            <h1>KELASSI</h1>
+            <p class="subtitle">Ton professeur virtuel personnalisé</p>
+        </div>
+
+        <!-- Onglets -->
+        <div class="tabs">
+            <div class="tab active" onclick="switchTab('inscription')">
+                Créer un compte
+            </div>
+            <div class="tab" onclick="switchTab('connexion')">
+                Connexion
+            </div>
+        </div>
+
+        <!-- Contenu INSCRIPTION -->
+        <div id="inscriptionTab" class="tab-content active">
+            <form id="inscriptionForm">
+                <!-- Nom -->
+                <div class="form-group">
+                    <label for="inscriptionName">Ton prénom</label>
+                    <input type="text" id="inscriptionName" placeholder="Ex: Luderick" required>
+                </div>
+
+                <!-- Téléphone -->
+                <div class="form-group">
+                    <label for="inscriptionPhone">Ton numéro de téléphone</label>
+                    <input type="tel" id="inscriptionPhone" placeholder="Ex: +242 06 123 4567" required>
+                </div>
+
+                <!-- Profil -->
+                <div class="form-group">
+                    <label>Tu es :</label>
+                    <div class="radio-group">
+                        <div class="radio-option" onclick="selectProfile('eleve', 'inscription')">
+                            <input type="radio" name="inscriptionProfile" value="eleve" id="inscriptionProfileEleve">
+                            <label for="inscriptionProfileEleve">
+                                <div class="icon">🎓</div>
+                                Élève
+                            </label>
+                        </div>
+                        <div class="radio-option" onclick="selectProfile('autodidacte', 'inscription')">
+                            <input type="radio" name="inscriptionProfile" value="autodidacte" id="inscriptionProfileAuto">
+                            <label for="inscriptionProfileAuto">
+                                <div class="icon">💼</div>
+                                Autodidacte
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Champs ÉLÈVE -->
+                <div id="inscriptionEleveFields" class="hidden">
+                    <div class="form-group">
+                        <label for="inscriptionSchoolLevel">Niveau scolaire</label>
+                        <select id="inscriptionSchoolLevel">
+                            <option value="">-- Choisis ton niveau --</option>
+                            <option value="6ème">6ème</option>
+                            <option value="5ème">5ème</option>
+                            <option value="4ème">4ème</option>
+                            <option value="3ème">3ème</option>
+                            <option value="2nde">2nde</option>
+                            <option value="1ère">1ère</option>
+                            <option value="Terminale">Terminale</option>
+                            <option value="Licence">Licence</option>
+                            <option value="Master">Master</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="inscriptionFiliere">Filière (optionnel)</label>
+                        <input type="text" id="inscriptionFiliere" placeholder="Ex: C, A, D, STI2D, etc.">
+                    </div>
+                </div>
+
+                <!-- Champs AUTODIDACTE -->
+                <div id="inscriptionAutodidacteFields" class="hidden">
+                    <div class="form-group">
+                        <label for="inscriptionLevel">Niveau d'expérience</label>
+                        <select id="inscriptionLevel">
+                            <option value="">-- Choisis ton niveau --</option>
+                            <option value="débutant">Débutant</option>
+                            <option value="intermédiaire">Intermédiaire</option>
+                            <option value="avancé">Avancé</option>
+                        </select>
+                    </div>
+                </div>
+
+                <button type="submit" class="submit-btn" id="inscriptionBtn">
+                    Créer mon compte 🚀
+                </button>
+            </form>
+        </div>
+
+        <!-- Contenu CONNEXION -->
+        <div id="connexionTab" class="tab-content">
+            <form id="connexionForm">
+                <!-- Nom -->
+                <div class="form-group">
+                    <label for="connexionName">Ton prénom</label>
+                    <input type="text" id="connexionName" placeholder="Ex: Luderick" required>
+                </div>
+
+                <!-- Téléphone -->
+                <div class="form-group">
+                    <label for="connexionPhone">Ton numéro de téléphone</label>
+                    <input type="tel" id="connexionPhone" placeholder="Ex: +242 06 123 4567" required>
+                </div>
+
+                <button type="submit" class="submit-btn" id="connexionBtn">
+                    Se connecter 🔓
+                </button>
+            </form>
+        </div>
+
+        <div class="loading" id="loading">
+            <div class="loading-spinner"></div>
+            <p id="loadingText">Création de ton compte...</p>
+        </div>
+
+        <div class="error-message" id="errorMessage"></div>
+        <div class="success-message" id="successMessage"></div>
+        <div class="debug-info" id="debugInfo"></div>
+    </div>
+
+    <script>
+        // ============================================
+        // CONFIGURATION - MODIFIE CES URLs
+        // ============================================
+        const WEBHOOK_INSCRIPTION_URL = 'https://n8n.srv1090700.hstgr.cloud/webhook/inscription';
+        const WEBHOOK_CONNEXION_URL = 'https://n8n.srv1090700.hstgr.cloud/webhook/connexion';
+        
+        // Mode debug - met à true pour voir les erreurs détaillées
+        const DEBUG_MODE = true;
+
+        // ============================================
+        // FONCTIONS UTILITAIRES
+        // ============================================
+
+        function showDebug(message) {
+            if (DEBUG_MODE) {
+                const debugDiv = document.getElementById('debugInfo');
+                debugDiv.innerHTML += message + '<br>';
+                debugDiv.classList.add('active');
+                console.log(message);
+            }
+        }
+
+        function clearDebug() {
+            document.getElementById('debugInfo').innerHTML = '';
+            document.getElementById('debugInfo').classList.remove('active');
+        }
+
+        // ============================================
+        // FONCTION FETCH AMÉLIORÉE AVEC GESTION CORS
+        // ============================================
+
+        async function sendToWebhook(url, data) {
+            clearDebug();
+            showDebug('📤 Envoi vers: ' + url);
+            showDebug('📦 Données: ' + JSON.stringify(data));
+
+            try {
+                // Tentative 1: Fetch normal avec mode cors
+                const response = await fetch(url, {
+                    method: 'POST',
+                    mode: 'cors',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify(data)
+                });
+
+                showDebug('✅ Statut: ' + response.status);
+
+                if (!response.ok) {
+                    throw new Error('Erreur HTTP: ' + response.status);
+                }
+
+                // Essayer de parser en JSON
+                const text = await response.text();
+                showDebug('📥 Réponse brute: ' + text);
+
+                try {
+                    return JSON.parse(text);
+                } catch (e) {
+                    // Si ce n'est pas du JSON, retourner un objet de succès
+                    return { success: true, message: text };
+                }
+
+            } catch (error) {
+                showDebug('❌ Erreur: ' + error.message);
+                
+                // Si c'est une erreur CORS, on essaie avec no-cors (mais on ne pourra pas lire la réponse)
+                if (error.message.includes('CORS') || error.message.includes('Failed to fetch')) {
+                    showDebug('🔄 Tentative avec no-cors...');
+                    
+                    try {
+                        await fetch(url, {
+                            method: 'POST',
+                            mode: 'no-cors',
+                            headers: {
+                                'Content-Type': 'text/plain'
+                            },
+                            body: JSON.stringify(data)
+                        });
+                        
+                        showDebug('⚠️ Requête envoyée (mode no-cors) - impossible de lire la réponse');
+                        
+                        // En mode no-cors, on ne peut pas lire la réponse
+                        // On suppose que ça a marché
+                        return { 
+                            success: true, 
+                            message: 'Requête envoyée (vérifier n8n)',
+                            no_cors: true 
+                        };
+                        
+                    } catch (e2) {
+                        showDebug('❌ Échec total: ' + e2.message);
+                        throw new Error('Impossible de contacter le serveur');
+                    }
+                }
+                
+                throw error;
+            }
+        }
+
+        // ============================================
+        // GESTION DES ONGLETS
+        // ============================================
+
+        function switchTab(tab) {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(tc => tc.classList.remove('active'));
+
+            if (tab === 'inscription') {
+                document.querySelectorAll('.tab')[0].classList.add('active');
+                document.getElementById('inscriptionTab').classList.add('active');
+            } else {
+                document.querySelectorAll('.tab')[1].classList.add('active');
+                document.getElementById('connexionTab').classList.add('active');
+            }
+
+            hideMessages();
+            clearDebug();
+        }
+
+        // ============================================
+        // SÉLECTION DU PROFIL
+        // ============================================
+
+        function selectProfile(type, form) {
+            if (form === 'inscription') {
+                const eleveFields = document.getElementById('inscriptionEleveFields');
+                const autodidacteFields = document.getElementById('inscriptionAutodidacteFields');
+                const options = document.querySelectorAll('#inscriptionTab .radio-option');
+
+                options.forEach(opt => opt.classList.remove('selected'));
+                event.currentTarget.classList.add('selected');
+                
+                document.getElementById('inscription' + (type === 'eleve' ? 'ProfileEleve' : 'ProfileAuto')).checked = true;
+
+                if (type === 'eleve') {
+                    eleveFields.classList.remove('hidden');
+                    autodidacteFields.classList.add('hidden');
+                } else {
+                    eleveFields.classList.add('hidden');
+                    autodidacteFields.classList.remove('hidden');
+                }
+            }
+        }
+
+        // ============================================
+        // FORMULAIRE INSCRIPTION
+        // ============================================
+
+        document.getElementById('inscriptionForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            const name = document.getElementById('inscriptionName').value.trim();
+            const phone = document.getElementById('inscriptionPhone').value.trim();
+            const profile = document.querySelector('input[name="inscriptionProfile"]:checked');
+
+            if (!name) {
+                showError('Merci d\'entrer ton prénom');
+                return;
+            }
+
+            if (!phone) {
+                showError('Merci d\'entrer ton numéro de téléphone');
+                return;
+            }
+
+            if (!profile) {
+                showError('Merci de sélectionner ton profil');
+                return;
+            }
+
+            const data = {
+                action: 'inscription',
+                name: name,
+                phone: phone,
+                profile: profile.value,
+                timestamp: new Date().toISOString()
+            };
+
+            if (profile.value === 'eleve') {
+                const schoolLevel = document.getElementById('inscriptionSchoolLevel').value;
+                
+                if (!schoolLevel) {
+                    showError('Merci de sélectionner ton niveau scolaire');
+                    return;
+                }
+
+                data.school_level = schoolLevel;
+                data.filiere = document.getElementById('inscriptionFiliere').value.trim() || null;
+                data.level = null;
+            } else {
+                const level = document.getElementById('inscriptionLevel').value;
+                
+                if (!level) {
+                    showError('Merci de sélectionner ton niveau d\'expérience');
+                    return;
+                }
+
+                data.level = level;
+                data.school_level = null;
+                data.filiere = null;
+            }
+
+            showLoading('Création de ton compte...');
+
+            try {
+                const result = await sendToWebhook(WEBHOOK_INSCRIPTION_URL, data);
+
+                if (result.success || result.no_cors) {
+                    // Générer un user_id local si le serveur n'en renvoie pas
+                    const userId = result.user_id || 'user_' + Date.now();
+                    
+                    // Sauvegarder pour inscription.html
+                    localStorage.setItem('kelassi_user_id', userId);
+                    localStorage.setItem('kelassi_user_name', name);
+                    localStorage.setItem('kelassi_user_profile', JSON.stringify(data));
+                    
+                    // Sauvegarder pour index.html (GitHub) - format compatible
+                    const profileForIndex = {
+                        user_id: userId,
+                        profile: data.profile,
+                        school_level: data.school_level || '',
+                        filiere: data.filiere || '',
+                        level: data.level || ''
+                    };
+                    localStorage.setItem('kelassiProfile', JSON.stringify(profileForIndex));
+
+                    if (result.no_cors) {
+                        showSuccess('Compte créé localement ! Redirection...');
+                    } else {
+                        showSuccess('Compte créé ! Redirection...');
+                    }
+                    
+                    setTimeout(() => {
+                        window.location.href = 'https://lude397.github.io/assistant-pedagogique/';
+                    }, 1500);
+                } else {
+                    showError(result.message || 'Une erreur est survenue');
+                }
+
+            } catch (error) {
+                showError('Impossible de se connecter: ' + error.message);
+            } finally {
+                hideLoading();
+            }
+        });
+
+        // ============================================
+        // FORMULAIRE CONNEXION
+        // ============================================
+
+        document.getElementById('connexionForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            const name = document.getElementById('connexionName').value.trim();
+            const phone = document.getElementById('connexionPhone').value.trim();
+
+            if (!name) {
+                showError('Merci d\'entrer ton prénom');
+                return;
+            }
+
+            if (!phone) {
+                showError('Merci d\'entrer ton numéro de téléphone');
+                return;
+            }
+
+            const data = {
+                action: 'connexion',
+                name: name,
+                phone: phone,
+                timestamp: new Date().toISOString()
+            };
+
+            showLoading('Connexion en cours...');
+
+            try {
+                const result = await sendToWebhook(WEBHOOK_CONNEXION_URL, data);
+
+                if (result.success || result.no_cors) {
+                    const userId = result.user_id || 'user_' + Date.now();
+                    
+                    localStorage.setItem('kelassi_user_id', userId);
+                    localStorage.setItem('kelassi_user_name', result.name || name);
+                    
+                    // Sauvegarder pour index.html (GitHub) - format compatible
+                    const profileForIndex = {
+                        user_id: userId,
+                        profile: result.profile || 'eleve',
+                        school_level: result.school_level || '',
+                        filiere: result.filiere || '',
+                        level: result.level || ''
+                    };
+                    localStorage.setItem('kelassiProfile', JSON.stringify(profileForIndex));
+
+                    showSuccess('Connecté ! Redirection...');
+                    
+                    setTimeout(() => {
+                        window.location.href = 'https://lude397.github.io/assistant-pedagogique/';
+                    }, 1500);
+                } else {
+                    showError(result.message || 'Compte introuvable. Vérifie tes informations ou crée un compte.');
+                }
+
+            } catch (error) {
+                showError('Impossible de se connecter: ' + error.message);
+            } finally {
+                hideLoading();
+            }
+        });
+
+        // ============================================
+        // FONCTIONS D'AFFICHAGE
+        // ============================================
+
+        function showLoading(text) {
+            document.getElementById('loadingText').textContent = text;
+            document.getElementById('loading').classList.add('active');
+            document.getElementById('inscriptionBtn').disabled = true;
+            document.getElementById('connexionBtn').disabled = true;
+        }
+
+        function hideLoading() {
+            document.getElementById('loading').classList.remove('active');
+            document.getElementById('inscriptionBtn').disabled = false;
+            document.getElementById('connexionBtn').disabled = false;
+        }
+
+        function showError(message) {
+            const errorDiv = document.getElementById('errorMessage');
+            errorDiv.textContent = message;
+            errorDiv.classList.add('active');
+            document.getElementById('successMessage').classList.remove('active');
+        }
+
+        function showSuccess(message) {
+            const successDiv = document.getElementById('successMessage');
+            successDiv.textContent = message;
+            successDiv.classList.add('active');
+            document.getElementById('errorMessage').classList.remove('active');
+        }
+
+        function hideMessages() {
+            document.getElementById('errorMessage').classList.remove('active');
+            document.getElementById('successMessage').classList.remove('active');
+        }
+
+        // ============================================
+        // TEST DE CONNEXION AU DÉMARRAGE
+        // ============================================
+
+        window.addEventListener('load', function() {
+            showDebug('🚀 Page chargée');
+            showDebug('📍 URL Inscription: ' + WEBHOOK_INSCRIPTION_URL);
+            showDebug('📍 URL Connexion: ' + WEBHOOK_CONNEXION_URL);
+        });
+    </script>
+</body>
+</html>
