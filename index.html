@@ -132,6 +132,10 @@
             box-shadow: 0 8px 30px rgba(102, 126, 234, 0.6);
         }
 
+        .btn-connect.logout {
+            background: linear-gradient(135deg, #f093fb, #4facfe);
+        }
+
         /* Menu Hamburger MOBILE */
         .hamburger-btn {
             display: none;
@@ -767,6 +771,93 @@
             color: rgba(255, 255, 255, 0.8);
         }
 
+        /* Styles pour la page Profil */
+        .profile-container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .profile-card {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(20px);
+            border-radius: 30px;
+            padding: 40px;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            margin-top: 30px;
+        }
+
+        .profile-avatar {
+            width: 100px;
+            height: 100px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 50px;
+            margin: 0 auto 20px auto;
+        }
+
+        .profile-name {
+            font-size: 28px;
+            color: white;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .profile-info {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .profile-info-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+        }
+
+        .profile-info-label {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 14px;
+        }
+
+        .profile-info-value {
+            color: white;
+            font-weight: 600;
+            font-size: 16px;
+        }
+
+        .profile-not-connected {
+            text-align: center;
+            padding: 40px;
+        }
+
+        .profile-not-connected p {
+            margin-bottom: 20px;
+        }
+
+        .profile-connect-btn {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 15px 40px;
+            border: none;
+            border-radius: 50px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .profile-connect-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 30px rgba(102, 126, 234, 0.5);
+        }
+
         /* Responsive MOBILE */
         @media (max-width: 768px) {
             /* Cacher la navigation desktop */
@@ -868,6 +959,16 @@
 
             .page-content p {
                 font-size: 16px;
+            }
+
+            /* Profile card mobile */
+            .profile-card {
+                padding: 25px;
+                margin: 20px;
+            }
+
+            .profile-name {
+                font-size: 22px;
             }
         }
     </style>
@@ -975,7 +1076,7 @@
             </a>
         </div>
 
-        <div class="mobile-connect-btn">
+        <div class="mobile-connect-btn" id="mobileAuthBtn" onclick="handleAuthClick()">
             Se connecter
         </div>
     </div>
@@ -1034,7 +1135,7 @@
             </li>
         </ul>
 
-        <a href="#" class="btn-connect">Se connecter</a>
+        <a href="#" class="btn-connect" id="authBtn" onclick="handleAuthClick()">Se connecter</a>
     </nav>
 
     <!-- Page Accueil -->
@@ -1189,25 +1290,81 @@
         <div class="page-content">
             <h2>👤 Mon Profil</h2>
             <p>Vos informations personnelles et préférences</p>
+            
+            <!-- Contenu du profil (connecté) -->
+            <div class="profile-container" id="profileConnected" style="display: none;">
+                <div class="profile-card">
+                    <div class="profile-avatar">👤</div>
+                    <div class="profile-name" id="profileDisplayName">-</div>
+                    
+                    <div class="profile-info">
+                        <div class="profile-info-item">
+                            <span class="profile-info-label">Téléphone</span>
+                            <span class="profile-info-value" id="profileDisplayPhone">-</span>
+                        </div>
+                        <div class="profile-info-item">
+                            <span class="profile-info-label">Type de profil</span>
+                            <span class="profile-info-value" id="profileDisplayType">-</span>
+                        </div>
+                        <div class="profile-info-item" id="profileLevelRow">
+                            <span class="profile-info-label" id="profileLevelLabel">Niveau</span>
+                            <span class="profile-info-value" id="profileDisplayLevel">-</span>
+                        </div>
+                        <div class="profile-info-item" id="profileFiliereRow" style="display: none;">
+                            <span class="profile-info-label">Filière</span>
+                            <span class="profile-info-value" id="profileDisplayFiliere">-</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Message si non connecté -->
+            <div class="profile-not-connected" id="profileNotConnected">
+                <p>Tu n'es pas encore connecté</p>
+                <button class="profile-connect-btn" onclick="window.location.href='inscription.html'">
+                    Se connecter / S'inscrire
+                </button>
+            </div>
         </div>
     </div>
 
     <script>
         // Variables globales
         let userProfile = {};
+        let userName = '';
+        let isLoggedIn = false;
         const WEBHOOK_URL = 'https://n8n.srv1090700.hstgr.cloud/webhook/assistant-pedagogique';
 
         // Initialisation
         document.addEventListener('DOMContentLoaded', function() {
             // Vérifier si le profil existe dans localStorage
             const savedProfile = localStorage.getItem('kelassiProfile');
+            const savedName = localStorage.getItem('kelassi_user_name');
+            const savedFullProfile = localStorage.getItem('kelassi_user_profile');
             
             if (savedProfile) {
                 userProfile = JSON.parse(savedProfile);
+                isLoggedIn = true;
+                
+                // Récupérer le nom
+                if (savedName) {
+                    userName = savedName;
+                }
+                
+                // Récupérer les infos complètes si disponibles
+                if (savedFullProfile) {
+                    const fullProfile = JSON.parse(savedFullProfile);
+                    if (fullProfile.name) userName = fullProfile.name;
+                    if (fullProfile.phone) userProfile.phone = fullProfile.phone;
+                }
             } else {
                 // Afficher le modal de profil
                 document.getElementById('profileModal').classList.add('active');
             }
+
+            // Mettre à jour l'interface
+            updateAuthButton();
+            updateProfilePage();
 
             // Initialiser l'heure du message initial
             document.getElementById('initialTime').textContent = getCurrentTime();
@@ -1215,6 +1372,85 @@
             // Gérer la navigation
             setupNavigation();
         });
+
+        // Mettre à jour le bouton Connexion/Déconnexion
+        function updateAuthButton() {
+            const authBtn = document.getElementById('authBtn');
+            const mobileAuthBtn = document.getElementById('mobileAuthBtn');
+            
+            if (isLoggedIn) {
+                // Utilisateur connecté → Afficher "Déconnexion"
+                authBtn.textContent = 'Déconnexion';
+                authBtn.classList.add('logout');
+                mobileAuthBtn.textContent = 'Déconnexion';
+            } else {
+                // Non connecté → Afficher "Se connecter"
+                authBtn.textContent = 'Se connecter';
+                authBtn.classList.remove('logout');
+                mobileAuthBtn.textContent = 'Se connecter';
+            }
+        }
+
+        // Gérer le clic sur le bouton Connexion/Déconnexion
+        function handleAuthClick() {
+            if (isLoggedIn) {
+                // Déconnexion
+                logout();
+            } else {
+                // Rediriger vers inscription
+                window.location.href = 'inscription.html';
+            }
+        }
+
+        // Déconnexion
+        function logout() {
+            // Vider le localStorage
+            localStorage.removeItem('kelassiProfile');
+            localStorage.removeItem('kelassi_user_id');
+            localStorage.removeItem('kelassi_user_name');
+            localStorage.removeItem('kelassi_user_profile');
+            
+            // Rediriger vers inscription
+            window.location.href = 'inscription.html';
+        }
+
+        // Mettre à jour la page Profil
+        function updateProfilePage() {
+            const connectedDiv = document.getElementById('profileConnected');
+            const notConnectedDiv = document.getElementById('profileNotConnected');
+            
+            if (isLoggedIn) {
+                // Afficher les infos
+                connectedDiv.style.display = 'block';
+                notConnectedDiv.style.display = 'none';
+                
+                // Remplir les champs
+                document.getElementById('profileDisplayName').textContent = userName || 'Utilisateur';
+                document.getElementById('profileDisplayPhone').textContent = userProfile.phone || '-';
+                
+                // Type de profil
+                if (userProfile.profile === 'eleve') {
+                    document.getElementById('profileDisplayType').textContent = '🎓 Élève';
+                    document.getElementById('profileLevelLabel').textContent = 'Niveau scolaire';
+                    document.getElementById('profileDisplayLevel').textContent = userProfile.school_level || '-';
+                    
+                    // Afficher la filière si elle existe
+                    if (userProfile.filiere) {
+                        document.getElementById('profileFiliereRow').style.display = 'flex';
+                        document.getElementById('profileDisplayFiliere').textContent = userProfile.filiere;
+                    }
+                } else if (userProfile.profile === 'autodidacte') {
+                    document.getElementById('profileDisplayType').textContent = '💼 Autodidacte';
+                    document.getElementById('profileLevelLabel').textContent = 'Niveau d\'expérience';
+                    document.getElementById('profileDisplayLevel').textContent = userProfile.level || '-';
+                    document.getElementById('profileFiliereRow').style.display = 'none';
+                }
+            } else {
+                // Masquer les infos, afficher le message
+                connectedDiv.style.display = 'none';
+                notConnectedDiv.style.display = 'block';
+            }
+        }
 
         // Menu mobile
         function openMobileMenu() {
@@ -1301,6 +1537,11 @@
 
             // Sauvegarder dans localStorage
             localStorage.setItem('kelassiProfile', JSON.stringify(userProfile));
+            isLoggedIn = true;
+
+            // Mettre à jour l'interface
+            updateAuthButton();
+            updateProfilePage();
 
             // Fermer le modal
             document.getElementById('profileModal').classList.remove('active');
