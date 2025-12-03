@@ -1565,7 +1565,7 @@
             }
 
             // Sauvegarder dans localStorage
-            localStorage.setItem('kelassiProfile', JSON.stringify(userProfile));
+            localStorage.setItem('kelassi_user_profile', userProfile.profile || 'eleve');
             isLoggedIn = true;
 
             // Mettre à jour l'interface
@@ -1726,6 +1726,7 @@
     </script>
 </body>
 </html>
+
 
 
 
