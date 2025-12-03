@@ -1363,7 +1363,7 @@
             // Vérifier si le profil existe dans localStorage
             const savedProfile = localStorage.getItem('kelassiProfile');
             const savedName = localStorage.getItem('kelassi_user_name');
-            const savedFullProfile = localStorage.getItem('kelassiProfile');
+            const savedFullProfile = localStorage.getItem('kelassi_user_profile');
             
             if (savedProfile) {
                 userProfile = JSON.parse(savedProfile);
@@ -1726,6 +1726,7 @@
     </script>
 </body>
 </html>
+
 
 
 
