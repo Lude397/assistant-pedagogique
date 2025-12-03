@@ -1350,6 +1350,12 @@
                 if (savedName) {
                     userName = savedName;
                 }
+
+                // Ajouter le user_id de Supabase au profil
+                const supabaseUserId = localStorage.getItem('kelassi_user_id');
+                if (supabaseUserId) {
+                    userProfile.user_id = supabaseUserId;
+                    }
                 
                 // Récupérer les infos complètes si disponibles
                 if (savedFullProfile) {
@@ -1618,6 +1624,8 @@
                 // Préparer le payload
                 const payload = {
                     ...userProfile,
+                    user_id: localStorage.getItem('kelassi_user_id') || userProfile.user_id,
+                    name: localStorage.getItem('kelassi_user_name') || userName,
                     course_request: message
                 };
 
@@ -1694,3 +1702,4 @@
     </script>
 </body>
 </html>
+
