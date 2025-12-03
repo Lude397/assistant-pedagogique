@@ -656,7 +656,7 @@
                     // Sauvegarder pour inscription.html
                     localStorage.setItem('kelassi_user_id', userId);
                     localStorage.setItem('kelassi_user_name', name);
-                    localStorage.setItem('kelassi_user_profile', JSON.stringify(data));
+                    localStorage.setItem('kelassi_user_profile', data.profile || 'eleve');
                     
                     // Sauvegarder pour index.html (GitHub) - format compatible
                     const profileForIndex = {
