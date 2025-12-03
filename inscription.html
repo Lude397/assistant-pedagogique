@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Assistant Pédagogique IA</title>
+    <title>KELASSI - Plateforme d'Apprentissage</title>
     <style>
         * {
             margin: 0;
@@ -13,169 +13,898 @@
 
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 25%, #f093fb 50%, #4facfe 75%, #00f2fe 100%);
+            background-size: 400% 400%;
+            animation: gradientShift 15s ease infinite;
             min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
+            overflow-x: hidden;
         }
 
-        .container {
-            background: white;
-            border-radius: 20px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-            max-width: 600px;
-            width: 100%;
-            padding: 40px;
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
         }
+
+        /* Barre de navigation DESKTOP */
+        nav {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            border-bottom: 2px solid rgba(255, 255, 255, 0.2);
+            padding: 0 30px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 80px;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 28px;
+            font-weight: bold;
+            color: white;
+            text-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
+        }
+
+        .logo-icon {
+            font-size: 36px;
+            animation: bounce 2s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .nav-menu {
+            display: flex;
+            gap: 5px;
+            list-style: none;
+            align-items: center;
+        }
+
+        .nav-item {
+            position: relative;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 20px;
+            color: white;
+            text-decoration: none;
+            border-radius: 50px;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            position: relative;
+            overflow: hidden;
+            cursor: pointer;
+        }
+
+        .nav-link::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            transition: left 0.5s;
+        }
+
+        .nav-link:hover::before {
+            left: 100%;
+        }
+
+        .nav-link:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .nav-link.active {
+            background: rgba(255, 255, 255, 0.25);
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
+        }
+
+        .btn-connect {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 12px 30px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: bold;
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+            transition: all 0.3s ease;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            cursor: pointer;
+        }
+
+        .btn-connect:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 30px rgba(102, 126, 234, 0.6);
+        }
+
+        /* Menu Hamburger MOBILE */
+        .hamburger-btn {
+            display: none;
+            background: none;
+            border: none;
+            color: white;
+            font-size: 32px;
+            cursor: pointer;
+            padding: 10px;
+        }
+
+        .mobile-menu {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: -100%;
+            width: 80%;
+            max-width: 300px;
+            height: 100vh;
+            background: rgba(102, 126, 234, 0.95);
+            backdrop-filter: blur(20px);
+            z-index: 2000;
+            transition: left 0.3s ease;
+            overflow-y: auto;
+            padding: 30px 20px;
+        }
+
+        .mobile-menu.active {
+            left: 0;
+        }
+
+        .mobile-menu-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 40px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .mobile-menu-header h3 {
+            color: white;
+            font-size: 24px;
+        }
+
+        .close-menu-btn {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 32px;
+            cursor: pointer;
+        }
+
+        .mobile-menu-items {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .mobile-menu-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 15px 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            color: white;
+            text-decoration: none;
+            font-size: 18px;
+            font-weight: 500;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .mobile-menu-item:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateX(5px);
+        }
+
+        .mobile-menu-item span:first-child {
+            font-size: 24px;
+        }
+
+        .mobile-connect-btn {
+            margin-top: 30px;
+            background: linear-gradient(135deg, #f093fb, #4facfe);
+            color: white;
+            padding: 15px;
+            border-radius: 15px;
+            text-align: center;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .menu-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1999;
+        }
+
+        .menu-overlay.active {
+            display: block;
+        }
+
+        /* Barre de retour MOBILE */
+        .mobile-back-bar {
+            display: none;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            padding: 15px 20px;
+            border-bottom: 2px solid rgba(255, 255, 255, 0.2);
+            position: sticky;
+            top: 0;
+            z-index: 999;
+        }
+
+        .mobile-back-btn {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: none;
+            border: none;
+            color: white;
+            font-size: 20px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .mobile-back-btn .arrow {
+            font-size: 24px;
+        }
+
+        /* Contenu principal */
+        .main-content {
+            display: none;
+            min-height: calc(100vh - 80px);
+            padding: 40px 20px;
+        }
+
+        .main-content.active {
+            display: block;
+        }
+
+        /* Page Accueil */
+        .hero {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: calc(100vh - 160px);
+            text-align: center;
+            position: relative;
+        }
+
+        /* Particules flottantes */
+        .particle {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            animation: float 20s infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0) rotate(0deg); opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { transform: translateY(-1000px) rotate(720deg); opacity: 0; }
+        }
+
+        .particle:nth-child(1) { width: 80px; height: 80px; left: 10%; animation-delay: 0s; }
+        .particle:nth-child(2) { width: 60px; height: 60px; left: 20%; animation-delay: 2s; }
+        .particle:nth-child(3) { width: 100px; height: 100px; left: 50%; animation-delay: 4s; }
+        .particle:nth-child(4) { width: 70px; height: 70px; left: 70%; animation-delay: 6s; }
+        .particle:nth-child(5) { width: 90px; height: 90px; left: 85%; animation-delay: 8s; }
 
         h1 {
-            color: #667eea;
-            text-align: center;
-            margin-bottom: 10px;
-            font-size: 28px;
+            font-size: 72px;
+            color: white;
+            margin-bottom: 20px;
+            text-shadow: 0 0 40px rgba(255, 255, 255, 0.5);
+            animation: titleGlow 3s ease-in-out infinite;
+        }
+
+        @keyframes titleGlow {
+            0%, 100% { text-shadow: 0 0 40px rgba(255, 255, 255, 0.5); }
+            50% { text-shadow: 0 0 80px rgba(255, 255, 255, 0.8), 0 0 100px rgba(102, 126, 234, 0.5); }
         }
 
         .subtitle {
-            text-align: center;
-            color: #666;
-            margin-bottom: 30px;
-            font-size: 14px;
+            font-size: 24px;
+            color: rgba(255, 255, 255, 0.9);
+            margin-bottom: 40px;
+            max-width: 700px;
         }
 
-        .form-group {
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+            max-width: 1200px;
+            width: 100%;
+            margin-top: 60px;
+        }
+
+        .feature-card {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 40px 30px;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.4s ease;
+            cursor: pointer;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-10px) scale(1.05);
+            background: rgba(255, 255, 255, 0.25);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        .feature-icon {
+            font-size: 50px;
+            margin-bottom: 20px;
+            display: inline-block;
+            animation: rotate 3s linear infinite;
+        }
+
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .feature-card:hover .feature-icon {
+            animation-play-state: paused;
+        }
+
+        .feature-title {
+            font-size: 24px;
+            color: white;
+            margin-bottom: 15px;
+            font-weight: bold;
+        }
+
+        .feature-desc {
+            color: rgba(255, 255, 255, 0.8);
+            line-height: 1.6;
+        }
+
+        /* Page Prof IA (Chat) */
+        .chat-container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            border-radius: 30px;
+            padding: 30px;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+            height: calc(100vh - 200px);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .chat-header {
+            text-align: center;
+            padding-bottom: 20px;
+            border-bottom: 2px solid rgba(255, 255, 255, 0.2);
             margin-bottom: 20px;
         }
 
-        label {
-            display: block;
-            margin-bottom: 8px;
-            color: #333;
-            font-weight: 600;
-            font-size: 14px;
-        }
-
-        select, input, textarea {
-            width: 100%;
-            padding: 12px 15px;
-            border: 2px solid #e0e0e0;
-            border-radius: 10px;
-            font-size: 14px;
-            transition: border-color 0.3s;
-            font-family: inherit;
-        }
-
-        select:focus, input:focus, textarea:focus {
-            outline: none;
-            border-color: #667eea;
-        }
-
-        textarea {
-            resize: vertical;
-            min-height: 100px;
-        }
-
-        .hidden {
-            display: none;
-        }
-
-        button {
-            width: 100%;
-            padding: 15px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        .chat-header h2 {
+            font-size: 32px;
             color: white;
-            border: none;
-            border-radius: 10px;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: transform 0.2s, box-shadow 0.2s;
+            margin-bottom: 10px;
         }
 
-        button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.4);
+        .chat-header p {
+            color: rgba(255, 255, 255, 0.8);
         }
 
-        button:active {
-            transform: translateY(0);
-        }
-
-        button:disabled {
-            background: #ccc;
-            cursor: not-allowed;
-            transform: none;
-        }
-
-        .response-container {
-            margin-top: 30px;
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
             padding: 20px;
-            background: #f8f9fa;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .chat-messages::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .chat-messages::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.1);
             border-radius: 10px;
-            border-left: 4px solid #667eea;
         }
 
-        .response-container h3 {
-            color: #667eea;
-            margin-bottom: 15px;
-            font-size: 18px;
+        .chat-messages::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 10px;
         }
 
-        .response-text {
-            color: #333;
+        .message {
+            display: flex;
+            gap: 15px;
+            align-items: flex-start;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .message.user {
+            flex-direction: row-reverse;
+        }
+
+        .message-avatar {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            flex-shrink: 0;
+        }
+
+        .message.assistant .message-avatar {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+        }
+
+        .message.user .message-avatar {
+            background: linear-gradient(135deg, #f093fb, #4facfe);
+        }
+
+        .message-content {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            padding: 15px 20px;
+            border-radius: 20px;
+            max-width: 70%;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .message.user .message-content {
+            background: rgba(255, 255, 255, 0.25);
+        }
+
+        .message-text {
+            color: white;
             line-height: 1.6;
             white-space: pre-wrap;
         }
 
-        .loading {
+        .message-time {
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.6);
+            margin-top: 8px;
+        }
+
+        .chat-input-container {
+            display: flex;
+            gap: 15px;
+            padding-top: 20px;
+            border-top: 2px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .chat-input {
+            flex: 1;
+            background: rgba(255, 255, 255, 0.15);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 25px;
+            padding: 15px 25px;
+            color: white;
+            font-size: 16px;
+            outline: none;
+            transition: all 0.3s;
+        }
+
+        .chat-input::placeholder {
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .chat-input:focus {
+            background: rgba(255, 255, 255, 0.2);
+            border-color: rgba(255, 255, 255, 0.5);
+        }
+
+        .chat-send-btn {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border: none;
+            width: 55px;
+            height: 55px;
+            border-radius: 50%;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .chat-send-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.5);
+        }
+
+        .chat-send-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: scale(1);
+        }
+
+        .typing-indicator {
+            display: none;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .typing-indicator.active {
+            display: flex;
+        }
+
+        .typing-dots {
+            display: flex;
+            gap: 5px;
+        }
+
+        .typing-dot {
+            width: 8px;
+            height: 8px;
+            background: rgba(255, 255, 255, 0.6);
+            border-radius: 50%;
+            animation: typing 1.4s infinite;
+        }
+
+        .typing-dot:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
+        .typing-dot:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+
+        @keyframes typing {
+            0%, 60%, 100% {
+                transform: translateY(0);
+            }
+            30% {
+                transform: translateY(-10px);
+            }
+        }
+
+        /* Modal de profil */
+        .profile-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .profile-modal.active {
+            display: flex;
+        }
+
+        .profile-modal-content {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(20px);
+            border-radius: 30px;
+            padding: 50px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            max-width: 500px;
+            width: 90%;
+            animation: modalSlideIn 0.4s ease;
+        }
+
+        @keyframes modalSlideIn {
+            from {
+                opacity: 0;
+                transform: scale(0.8);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .profile-modal h2 {
+            color: white;
+            font-size: 32px;
+            margin-bottom: 10px;
             text-align: center;
-            color: #667eea;
-            font-style: italic;
         }
 
-        .error {
-            background: #fee;
-            border-left-color: #f44336;
+        .profile-modal p {
+            color: rgba(255, 255, 255, 0.8);
+            text-align: center;
+            margin-bottom: 30px;
         }
 
-        .error h3 {
-            color: #f44336;
+        .profile-form {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
         }
 
-        @media (max-width: 600px) {
-            .container {
-                padding: 25px;
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .form-group label {
+            color: white;
+            font-weight: 600;
+        }
+
+        .form-group select,
+        .form-group input {
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 15px;
+            padding: 15px;
+            color: white;
+            font-size: 16px;
+            outline: none;
+        }
+
+        .form-group select option {
+            background: #764ba2;
+            color: white;
+        }
+
+        .radio-group {
+            display: flex;
+            gap: 20px;
+        }
+
+        .radio-option {
+            flex: 1;
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 15px;
+            padding: 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: center;
+        }
+
+        .radio-option:hover {
+            background: rgba(255, 255, 255, 0.2);
+            border-color: rgba(255, 255, 255, 0.5);
+        }
+
+        .radio-option input[type="radio"] {
+            display: none;
+        }
+
+        .radio-option input[type="radio"]:checked + label {
+            color: #4facfe;
+        }
+
+        .radio-option.selected {
+            background: rgba(255, 255, 255, 0.25);
+            border-color: #4facfe;
+        }
+
+        .radio-option label {
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 18px;
+        }
+
+        .profile-submit {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 18px;
+            border: none;
+            border-radius: 15px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 10px;
+        }
+
+        .profile-submit:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.5);
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        /* Pages autres onglets */
+        .page-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        .page-content h2 {
+            font-size: 48px;
+            color: white;
+            margin-bottom: 20px;
+        }
+
+        .page-content p {
+            font-size: 20px;
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        /* Responsive MOBILE */
+        @media (max-width: 768px) {
+            /* Cacher la navigation desktop */
+            nav {
+                padding: 15px 20px;
+                height: 60px;
             }
 
+            .nav-menu,
+            .btn-connect {
+                display: none !important;
+            }
+
+            /* Afficher le hamburger */
+            .hamburger-btn {
+                display: block;
+            }
+
+            .mobile-menu {
+                display: block;
+            }
+
+            /* Afficher la barre de retour sur les pages */
+            .main-content:not(#page-accueil) .mobile-back-bar {
+                display: block;
+            }
+
+            /* Plein écran sur mobile */
+            .main-content {
+                padding: 0;
+                min-height: 100vh;
+            }
+
+            .main-content.active {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100vh;
+                z-index: 998;
+            }
+
+            #page-accueil.active {
+                position: relative;
+            }
+
+            /* Ajuster le hero pour mobile */
             h1 {
+                font-size: 42px;
+            }
+
+            .subtitle {
+                font-size: 18px;
+            }
+
+            .features {
+                grid-template-columns: 1fr;
+                padding: 0 20px;
+            }
+
+            /* Chat mobile plein écran */
+            .chat-container {
+                height: calc(100vh - 60px);
+                margin: 0;
+                border-radius: 0;
+                padding: 20px;
+            }
+
+            .chat-header h2 {
                 font-size: 24px;
+            }
+
+            .message-content {
+                max-width: 85%;
+            }
+
+            /* Modal profil mobile */
+            .profile-modal-content {
+                padding: 30px 20px;
+                margin: 20px;
+            }
+
+            .profile-modal h2 {
+                font-size: 24px;
+            }
+
+            .radio-group {
+                flex-direction: column;
+            }
+
+            /* Page content mobile */
+            .page-content {
+                padding: 80px 20px 20px 20px;
+            }
+
+            .page-content h2 {
+                font-size: 32px;
+            }
+
+            .page-content p {
+                font-size: 16px;
             }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>🎓 Assistant Pédagogique IA</h1>
-        <p class="subtitle">Votre professeur virtuel personnalisé</p>
+    <!-- Particules flottantes -->
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
 
-        <form id="assistantForm">
-            <!-- Profil -->
-            <div class="form-group">
-                <label for="profile">Quel est ton profil ?</label>
-                <select id="profile" required>
-                    <option value="">-- Sélectionne ton profil --</option>
-                    <option value="eleve">🎓 Élève / Étudiant</option>
-                    <option value="autodidacte">💼 Autodidacte</option>
-                </select>
-            </div>
-
-            <!-- Champs pour ÉLÈVE -->
-            <div id="eleveFields" class="hidden">
+    <!-- Modal de profil -->
+    <div class="profile-modal" id="profileModal">
+        <div class="profile-modal-content">
+            <h2>🎯 Avant de commencer</h2>
+            <p>Dis-nous qui tu es pour personnaliser ton expérience</p>
+            
+            <form class="profile-form" id="profileForm">
                 <div class="form-group">
-                    <label for="schoolLevel">Niveau scolaire</label>
+                    <label>Tu es :</label>
+                    <div class="radio-group">
+                        <div class="radio-option" onclick="selectProfile('eleve')">
+                            <input type="radio" name="profile" value="eleve" id="profileEleve">
+                            <label for="profileEleve">🎓 Élève</label>
+                        </div>
+                        <div class="radio-option" onclick="selectProfile('autodidacte')">
+                            <input type="radio" name="profile" value="autodidacte" id="profileAuto">
+                            <label for="profileAuto">💼 Autodidacte</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group hidden" id="eleveFields">
+                    <label>Niveau scolaire :</label>
                     <select id="schoolLevel">
-                        <option value="">-- Sélectionne ton niveau --</option>
+                        <option value="">-- Choisis ton niveau --</option>
                         <option value="6ème">6ème</option>
                         <option value="5ème">5ème</option>
                         <option value="4ème">4ème</option>
@@ -184,91 +913,475 @@
                         <option value="1ère">1ère</option>
                         <option value="Terminale">Terminale</option>
                         <option value="Licence">Licence</option>
-                        <option value="Master">Master</option>
                     </select>
-                </div>
 
-                <div class="form-group">
-                    <label for="filiere">Filière (si applicable)</label>
+                    <label>Filière (si applicable) :</label>
                     <input type="text" id="filiere" placeholder="Ex: C, A, D, STI2D, etc.">
                 </div>
-            </div>
 
-            <!-- Champs pour AUTODIDACTE -->
-            <div id="autodidacteFields" class="hidden">
-                <div class="form-group">
-                    <label for="level">Niveau d'expérience</label>
+                <div class="form-group hidden" id="autodidacteFields">
+                    <label>Niveau d'expérience :</label>
                     <select id="level">
-                        <option value="">-- Sélectionne ton niveau --</option>
+                        <option value="">-- Choisis ton niveau --</option>
                         <option value="débutant">Débutant</option>
                         <option value="intermédiaire">Intermédiaire</option>
                         <option value="avancé">Avancé</option>
                     </select>
                 </div>
+
+                <button type="submit" class="profile-submit">Commencer 🚀</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Overlay du menu mobile -->
+    <div class="menu-overlay" id="menuOverlay" onclick="closeMobileMenu()"></div>
+
+    <!-- Menu mobile -->
+    <div class="mobile-menu" id="mobileMenu">
+        <div class="mobile-menu-header">
+            <h3>Menu</h3>
+            <button class="close-menu-btn" onclick="closeMobileMenu()">✕</button>
+        </div>
+        
+        <div class="mobile-menu-items">
+            <a class="mobile-menu-item" data-page="accueil">
+                <span>🏠</span>
+                <span>Accueil</span>
+            </a>
+            <a class="mobile-menu-item" data-page="lecon">
+                <span>📖</span>
+                <span>Leçon</span>
+            </a>
+            <a class="mobile-menu-item" data-page="questionnaire">
+                <span>🌐</span>
+                <span>Questionnaire</span>
+            </a>
+            <a class="mobile-menu-item" data-page="exercices">
+                <span>📝</span>
+                <span>Exercices</span>
+            </a>
+            <a class="mobile-menu-item" data-page="tableau">
+                <span>📊</span>
+                <span>Tableau de bord</span>
+            </a>
+            <a class="mobile-menu-item" data-page="prof-ia">
+                <span>🤖</span>
+                <span>Prof IA</span>
+            </a>
+            <a class="mobile-menu-item" data-page="profil">
+                <span>👤</span>
+                <span>Profil</span>
+            </a>
+        </div>
+
+        <div class="mobile-connect-btn">
+            Se connecter
+        </div>
+    </div>
+
+    <!-- Navigation DESKTOP -->
+    <nav>
+        <button class="hamburger-btn" onclick="openMobileMenu()">☰</button>
+        
+        <div class="logo">
+            <span class="logo-icon">🎓</span>
+            <span>KELASSI</span>
+        </div>
+        
+        <ul class="nav-menu">
+            <li class="nav-item">
+                <a class="nav-link active" data-page="accueil">
+                    <span>🏠</span>
+                    <span>Accueil</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" data-page="lecon">
+                    <span>📖</span>
+                    <span>Leçon</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" data-page="questionnaire">
+                    <span>🌐</span>
+                    <span>Questionnaire</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" data-page="exercices">
+                    <span>📝</span>
+                    <span>Exercices</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" data-page="tableau">
+                    <span>📊</span>
+                    <span>Tableau de bord</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" data-page="prof-ia">
+                    <span>🤖</span>
+                    <span>Prof IA</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" data-page="profil">
+                    <span>👤</span>
+                    <span>Profil</span>
+                </a>
+            </li>
+        </ul>
+
+        <a href="#" class="btn-connect">Se connecter</a>
+    </nav>
+
+    <!-- Page Accueil -->
+    <div class="main-content active" id="page-accueil">
+        <div class="hero">
+            <h1>Bienvenue sur KELASSI</h1>
+            <p class="subtitle">Votre plateforme d'apprentissage personnalisée pour réussir vos études avec des outils innovants et interactifs</p>
+
+            <div class="features">
+                <div class="feature-card">
+                    <div class="feature-icon">📚</div>
+                    <h3 class="feature-title">Leçons Interactives</h3>
+                    <p class="feature-desc">Apprenez à votre rythme avec des contenus adaptés à votre niveau</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">🎯</div>
+                    <h3 class="feature-title">Quiz Personnalisés</h3>
+                    <p class="feature-desc">Testez vos connaissances avec des questionnaires intelligents</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">📈</div>
+                    <h3 class="feature-title">Suivi de Progression</h3>
+                    <p class="feature-desc">Visualisez votre évolution et identifiez vos points forts</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">🤖</div>
+                    <h3 class="feature-title">Prof IA Personnel</h3>
+                    <p class="feature-desc">Bénéficiez d'un professeur virtuel disponible 24/7</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Page Leçon -->
+    <div class="main-content" id="page-lecon">
+        <div class="mobile-back-bar">
+            <button class="mobile-back-btn" onclick="goToHome()">
+                <span class="arrow">←</span>
+                <span>Leçon</span>
+            </button>
+        </div>
+        <div class="page-content">
+            <h2>📖 Mes Leçons</h2>
+            <p>Vos leçons apparaîtront ici automatiquement après vos conversations avec le Prof IA</p>
+        </div>
+    </div>
+
+    <!-- Page Questionnaire -->
+    <div class="main-content" id="page-questionnaire">
+        <div class="mobile-back-bar">
+            <button class="mobile-back-btn" onclick="goToHome()">
+                <span class="arrow">←</span>
+                <span>Questionnaire</span>
+            </button>
+        </div>
+        <div class="page-content">
+            <h2>🌐 Mes Questionnaires</h2>
+            <p>Vos quiz et résultats s'afficheront ici</p>
+        </div>
+    </div>
+
+    <!-- Page Exercices -->
+    <div class="main-content" id="page-exercices">
+        <div class="mobile-back-bar">
+            <button class="mobile-back-btn" onclick="goToHome()">
+                <span class="arrow">←</span>
+                <span>Exercices</span>
+            </button>
+        </div>
+        <div class="page-content">
+            <h2>📝 Mes Exercices</h2>
+            <p>Vos exercices personnalisés seront disponibles ici</p>
+        </div>
+    </div>
+
+    <!-- Page Tableau de bord -->
+    <div class="main-content" id="page-tableau">
+        <div class="mobile-back-bar">
+            <button class="mobile-back-btn" onclick="goToHome()">
+                <span class="arrow">←</span>
+                <span>Tableau de bord</span>
+            </button>
+        </div>
+        <div class="page-content">
+            <h2>📊 Tableau de Bord</h2>
+            <p>Votre progression et statistiques apparaîtront ici</p>
+        </div>
+    </div>
+
+    <!-- Page Prof IA (Chat) -->
+    <div class="main-content" id="page-prof-ia">
+        <div class="mobile-back-bar">
+            <button class="mobile-back-btn" onclick="goToHome()">
+                <span class="arrow">←</span>
+                <span>Prof IA</span>
+            </button>
+        </div>
+        
+        <div class="chat-container">
+            <div class="chat-header">
+                <h2>🤖 Votre Professeur Virtuel</h2>
+                <p>Posez vos questions, je suis là pour vous aider !</p>
             </div>
 
-            <!-- Question / Sujet -->
-            <div class="form-group">
-                <label for="courseRequest">Ta question ou le sujet à apprendre</label>
-                <textarea id="courseRequest" placeholder="Ex: Les dérivées, la cybersécurité, l'espagnol niveau A2..." required></textarea>
+            <div class="chat-messages" id="chatMessages">
+                <div class="message assistant">
+                    <div class="message-avatar">🤖</div>
+                    <div class="message-content">
+                        <div class="message-text">Bonjour ! Je suis ton professeur virtuel. Sur quel sujet veux-tu travailler aujourd'hui ?</div>
+                        <div class="message-time" id="initialTime"></div>
+                    </div>
+                </div>
             </div>
 
-            <button type="submit" id="submitBtn">Envoyer ma demande</button>
-        </form>
+            <div class="typing-indicator" id="typingIndicator">
+                <div class="message-avatar">🤖</div>
+                <div class="message-content">
+                    <div class="typing-dots">
+                        <div class="typing-dot"></div>
+                        <div class="typing-dot"></div>
+                        <div class="typing-dot"></div>
+                    </div>
+                </div>
+            </div>
 
-        <!-- Zone de réponse -->
-        <div id="responseArea" class="hidden"></div>
+            <div class="chat-input-container">
+                <input 
+                    type="text" 
+                    class="chat-input" 
+                    id="chatInput" 
+                    placeholder="Écris ta question ici..."
+                    onkeypress="handleKeyPress(event)"
+                >
+                <button class="chat-send-btn" id="sendBtn" onclick="sendMessage()">
+                    📤
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Page Profil -->
+    <div class="main-content" id="page-profil">
+        <div class="mobile-back-bar">
+            <button class="mobile-back-btn" onclick="goToHome()">
+                <span class="arrow">←</span>
+                <span>Profil</span>
+            </button>
+        </div>
+        <div class="page-content">
+            <h2>👤 Mon Profil</h2>
+            <p>Vos informations personnelles et préférences</p>
+        </div>
     </div>
 
     <script>
-        const form = document.getElementById('assistantForm');
-        const profileSelect = document.getElementById('profile');
-        const eleveFields = document.getElementById('eleveFields');
-        const autodidacteFields = document.getElementById('autodidacteFields');
-        const responseArea = document.getElementById('responseArea');
-        const submitBtn = document.getElementById('submitBtn');
+        // Variables globales
+        let userProfile = {};
+        const WEBHOOK_URL = 'https://n8n.srv1090700.hstgr.cloud/webhook/assistant-pedagogique';
 
-        // Afficher les champs selon le profil
-        profileSelect.addEventListener('change', function() {
-            eleveFields.classList.add('hidden');
-            autodidacteFields.classList.add('hidden');
-
-            if (this.value === 'eleve') {
-                eleveFields.classList.remove('hidden');
-            } else if (this.value === 'autodidacte') {
-                autodidacteFields.classList.remove('hidden');
+        // Initialisation
+        document.addEventListener('DOMContentLoaded', function() {
+            // Vérifier si le profil existe dans localStorage
+            const savedProfile = localStorage.getItem('kelassiProfile');
+            
+            if (savedProfile) {
+                userProfile = JSON.parse(savedProfile);
+            } else {
+                // Afficher le modal de profil
+                document.getElementById('profileModal').classList.add('active');
             }
+
+            // Initialiser l'heure du message initial
+            document.getElementById('initialTime').textContent = getCurrentTime();
+
+            // Gérer la navigation
+            setupNavigation();
         });
 
-        // Gestion de l'envoi du formulaire
-        form.addEventListener('submit', async function(e) {
+        // Menu mobile
+        function openMobileMenu() {
+            document.getElementById('mobileMenu').classList.add('active');
+            document.getElementById('menuOverlay').classList.add('active');
+        }
+
+        function closeMobileMenu() {
+            document.getElementById('mobileMenu').classList.remove('active');
+            document.getElementById('menuOverlay').classList.remove('active');
+        }
+
+        function goToHome() {
+            // Retourner à l'accueil
+            document.querySelectorAll('.main-content').forEach(page => {
+                page.classList.remove('active');
+            });
+            document.getElementById('page-accueil').classList.add('active');
+
+            // Mettre à jour la navigation desktop
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.classList.remove('active');
+            });
+            document.querySelector('.nav-link[data-page="accueil"]').classList.add('active');
+        }
+
+        // Configuration du profil
+        function selectProfile(type) {
+            const eleveFields = document.getElementById('eleveFields');
+            const autodidacteFields = document.getElementById('autodidacteFields');
+            const options = document.querySelectorAll('.radio-option');
+
+            options.forEach(opt => opt.classList.remove('selected'));
+            event.currentTarget.classList.add('selected');
+
+            document.getElementById('profile' + (type === 'eleve' ? 'Eleve' : 'Auto')).checked = true;
+
+            if (type === 'eleve') {
+                eleveFields.classList.remove('hidden');
+                autodidacteFields.classList.add('hidden');
+            } else {
+                eleveFields.classList.add('hidden');
+                autodidacteFields.classList.remove('hidden');
+            }
+        }
+
+        // Soumission du formulaire de profil
+        document.getElementById('profileForm').addEventListener('submit', function(e) {
             e.preventDefault();
 
-            const profile = profileSelect.value;
-            const courseRequest = document.getElementById('courseRequest').value;
-
-            // Construire le payload selon le profil
-            let payload = {
-                user_id: 'web_' + Date.now(),
-                profile: profile,
-                course_request: courseRequest
-            };
-
-            if (profile === 'eleve') {
-                payload.school_level = document.getElementById('schoolLevel').value;
-                payload.filiere = document.getElementById('filiere').value || '';
-            } else {
-                payload.level = document.getElementById('level').value;
+            const profile = document.querySelector('input[name="profile"]:checked');
+            
+            if (!profile) {
+                alert('Merci de sélectionner un profil');
+                return;
             }
 
-            // Afficher le chargement
-            responseArea.innerHTML = '<div class="response-container"><p class="loading">⏳ Le professeur réfléchit...</p></div>';
-            responseArea.classList.remove('hidden');
-            submitBtn.disabled = true;
+            userProfile = {
+                user_id: 'user_' + Date.now(),
+                profile: profile.value
+            };
+
+            if (profile.value === 'eleve') {
+                const schoolLevel = document.getElementById('schoolLevel').value;
+                const filiere = document.getElementById('filiere').value;
+
+                if (!schoolLevel) {
+                    alert('Merci de sélectionner ton niveau scolaire');
+                    return;
+                }
+
+                userProfile.school_level = schoolLevel;
+                userProfile.filiere = filiere || '';
+            } else {
+                const level = document.getElementById('level').value;
+
+                if (!level) {
+                    alert('Merci de sélectionner ton niveau d\'expérience');
+                    return;
+                }
+
+                userProfile.level = level;
+            }
+
+            // Sauvegarder dans localStorage
+            localStorage.setItem('kelassiProfile', JSON.stringify(userProfile));
+
+            // Fermer le modal
+            document.getElementById('profileModal').classList.remove('active');
+        });
+
+        // Navigation entre les pages
+        function setupNavigation() {
+            // Navigation desktop
+            const navLinks = document.querySelectorAll('.nav-link');
+            navLinks.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    navigateToPage(this.getAttribute('data-page'));
+                });
+            });
+
+            // Navigation mobile
+            const mobileLinks = document.querySelectorAll('.mobile-menu-item');
+            mobileLinks.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    navigateToPage(this.getAttribute('data-page'));
+                    closeMobileMenu();
+                });
+            });
+        }
+
+        function navigateToPage(pageName) {
+            // Retirer la classe active de tous les liens desktop
+            document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+            
+            // Ajouter la classe active au lien cliqué (desktop)
+            const activeLink = document.querySelector(`.nav-link[data-page="${pageName}"]`);
+            if (activeLink) {
+                activeLink.classList.add('active');
+            }
+            
+            // Cacher toutes les pages
+            document.querySelectorAll('.main-content').forEach(page => {
+                page.classList.remove('active');
+            });
+            
+            // Afficher la page correspondante
+            document.getElementById('page-' + pageName).classList.add('active');
+        }
+
+        // Gestion du chat
+        function handleKeyPress(event) {
+            if (event.key === 'Enter') {
+                sendMessage();
+            }
+        }
+
+        async function sendMessage() {
+            const input = document.getElementById('chatInput');
+            const message = input.value.trim();
+
+            if (!message) return;
+
+            // Afficher le message de l'utilisateur
+            addMessage(message, 'user');
+
+            // Vider l'input
+            input.value = '';
+
+            // Désactiver le bouton d'envoi
+            const sendBtn = document.getElementById('sendBtn');
+            sendBtn.disabled = true;
+
+            // Afficher l'indicateur de frappe
+            document.getElementById('typingIndicator').classList.add('active');
 
             try {
-                // Envoyer la requête au webhook
-                const response = await fetch('https://n8n.srv1090700.hstgr.cloud/webhook-test/assistant-pedagogique', {
+                // Préparer le payload
+                const payload = {
+                    ...userProfile,
+                    course_request: message
+                };
+
+                // Envoyer au webhook
+                const response = await fetch(WEBHOOK_URL, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
@@ -282,25 +1395,62 @@
 
                 const result = await response.text();
 
-                // Afficher la réponse
-                responseArea.innerHTML = `
-                    <div class="response-container">
-                        <h3>👨‍🏫 Réponse du professeur :</h3>
-                        <div class="response-text">${result}</div>
-                    </div>
-                `;
+                // Cacher l'indicateur de frappe
+                document.getElementById('typingIndicator').classList.remove('active');
+
+                // Afficher la réponse du Prof IA
+                addMessage(result, 'assistant');
 
             } catch (error) {
-                responseArea.innerHTML = `
-                    <div class="response-container error">
-                        <h3>❌ Erreur</h3>
-                        <p>Impossible de contacter l'assistant. Veuillez réessayer.</p>
-                    </div>
-                `;
+                // Cacher l'indicateur de frappe
+                document.getElementById('typingIndicator').classList.remove('active');
+
+                addMessage('Désolé, une erreur s\'est produite. Peux-tu réessayer ?', 'assistant');
             } finally {
-                submitBtn.disabled = false;
+                // Réactiver le bouton d'envoi
+                sendBtn.disabled = false;
             }
-        });
+        }
+
+        function addMessage(text, sender) {
+            const messagesContainer = document.getElementById('chatMessages');
+            
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${sender}`;
+            
+            const avatar = document.createElement('div');
+            avatar.className = 'message-avatar';
+            avatar.textContent = sender === 'user' ? '👤' : '🤖';
+            
+            const content = document.createElement('div');
+            content.className = 'message-content';
+            
+            const messageText = document.createElement('div');
+            messageText.className = 'message-text';
+            messageText.textContent = text;
+            
+            const messageTime = document.createElement('div');
+            messageTime.className = 'message-time';
+            messageTime.textContent = getCurrentTime();
+            
+            content.appendChild(messageText);
+            content.appendChild(messageTime);
+            
+            messageDiv.appendChild(avatar);
+            messageDiv.appendChild(content);
+            
+            messagesContainer.appendChild(messageDiv);
+            
+            // Scroller vers le bas
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }
+
+        function getCurrentTime() {
+            const now = new Date();
+            return now.getHours().toString().padStart(2, '0') + ':' + 
+                   now.getMinutes().toString().padStart(2, '0');
+        }
     </script>
 </body>
 </html>
+
