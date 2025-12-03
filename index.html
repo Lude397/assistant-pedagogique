@@ -1382,7 +1382,8 @@
                 
                 // Récupérer les infos complètes si disponibles
                 if (savedFullProfile) {
-                    const fullProfile = JSON.parse(savedFullProfile);
+                    // Si c'est déjà une chaîne, on l'utilise directement
+                    const profile = savedFullProfile;
                     if (fullProfile.name) userName = fullProfile.name;
                     if (fullProfile.phone) userProfile.phone = fullProfile.phone;
                 }
@@ -1726,6 +1727,7 @@
     </script>
 </body>
 </html>
+
 
 
 
