@@ -725,6 +725,7 @@
                     
                     localStorage.setItem('kelassi_user_id', userId);
                     localStorage.setItem('kelassi_user_name', result.name || name);
+                    localStorage.setItem('kelassi_user_profile', result.profile || 'eleve');
                     
                     // Sauvegarder pour index.html (GitHub) - format compatible
                     const profileForIndex = {
