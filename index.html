@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>KELASSI - Ton Professeur Virtuel</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
@@ -97,6 +97,36 @@
             font-weight: 700;
             color: var(--text-white);
             letter-spacing: 1px;
+        }
+
+        /* Menu Hamburger */
+        .hamburger {
+            display: none;
+            flex-direction: column;
+            gap: 5px;
+            cursor: pointer;
+            padding: 10px;
+            z-index: 1001;
+        }
+
+        .hamburger span {
+            width: 25px;
+            height: 3px;
+            background: var(--text-white);
+            border-radius: 3px;
+            transition: all 0.3s ease;
+        }
+
+        .hamburger.active span:nth-child(1) {
+            transform: rotate(45deg) translate(5px, 5px);
+        }
+
+        .hamburger.active span:nth-child(2) {
+            opacity: 0;
+        }
+
+        .hamburger.active span:nth-child(3) {
+            transform: rotate(-45deg) translate(7px, -7px);
         }
 
         .nav-links {
@@ -523,6 +553,7 @@
             display: flex;
             gap: 12px;
             margin-top: 20px;
+            padding-bottom: 20px;
         }
 
         .chat-input {
@@ -560,6 +591,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
+            flex-shrink: 0;
         }
 
         .btn-send:hover {
@@ -658,140 +690,58 @@
             display: none !important;
         }
 
-        /* MODAL */
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0, 0, 0, 0.8);
-            backdrop-filter: blur(10px);
-            z-index: 2000;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-        }
-
-        .modal.active {
-            display: flex;
-        }
-
-        .modal-content {
-            background: var(--bg-medium);
-            border-radius: var(--radius-xl);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            max-width: 450px;
-            width: 100%;
-            overflow: hidden;
-            animation: modalIn 0.3s ease;
-        }
-
-        @keyframes modalIn {
-            from {
-                opacity: 0;
-                transform: scale(0.9);
-            }
-            to {
-                opacity: 1;
-                transform: scale(1);
-            }
-        }
-
-        .modal-header {
-            text-align: center;
-            padding: 40px 30px 20px;
-        }
-
-        .modal-icon {
-            font-size: 48px;
-            display: block;
-            margin-bottom: 15px;
-        }
-
-        .modal-header h2 {
-            font-size: 24px;
-            font-weight: 700;
-            color: var(--text-white);
-            margin-bottom: 10px;
-        }
-
-        .modal-header p {
-            color: var(--text-muted);
-            font-size: 15px;
-        }
-
-        .modal-body {
-            padding: 20px 30px 40px;
-        }
-
-        .modal-label {
-            display: block;
-            color: var(--text-white);
-            font-weight: 600;
-            margin-bottom: 15px;
-        }
-
-        .profile-options {
-            display: flex;
-            gap: 15px;
-            margin-bottom: 25px;
-        }
-
-        .profile-option {
-            flex: 1;
-            padding: 25px 15px;
-            background: var(--bg-light);
-            border: 2px solid transparent;
-            border-radius: var(--radius-md);
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .profile-option:hover {
-            border-color: rgba(255, 255, 255, 0.2);
-        }
-
-        .profile-option.selected {
-            border-color: var(--primary-blue);
-            background: rgba(37, 99, 235, 0.2);
-            box-shadow: var(--shadow-blue);
-        }
-
-        .option-icon {
-            font-size: 36px;
-            display: block;
-            margin-bottom: 10px;
-        }
-
-        .option-text {
-            color: var(--text-white);
-            font-weight: 600;
-            font-size: 16px;
-        }
-
-        /* RESPONSIVE */
+        /* RESPONSIVE - MOBILE */
         @media (max-width: 768px) {
             .navbar {
                 padding: 15px 20px;
-                flex-wrap: wrap;
-                gap: 15px;
+            }
+
+            .hamburger {
+                display: flex;
             }
 
             .nav-links {
-                order: 3;
-                width: 100%;
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background: rgba(15, 23, 42, 0.98);
+                flex-direction: column;
+                align-items: center;
                 justify-content: center;
+                gap: 20px;
+                transform: translateX(-100%);
+                transition: transform 0.3s ease;
+                z-index: 999;
             }
 
-            .nav-link span:not(.link-icon) {
-                display: none;
+            .nav-links.active {
+                transform: translateX(0);
             }
 
             .nav-link {
-                padding: 10px 15px;
+                font-size: 18px;
+                padding: 15px 30px;
+            }
+
+            .btn-logout {
+                position: fixed;
+                bottom: 40px;
+                left: 50%;
+                transform: translateX(-50%);
+                z-index: 1000;
+                display: none;
+            }
+
+            .nav-links.active ~ .btn-logout,
+            .btn-logout.show-mobile {
+                display: block;
+            }
+
+            /* Pages en plein écran sur mobile */
+            .page {
+                padding-top: 70px;
             }
 
             .hero h1 {
@@ -811,16 +761,44 @@
                 text-align: center;
             }
 
+            /* Chat mobile - Fix clavier */
             .chat-container {
                 padding: 10px;
+                height: calc(100vh - 70px);
+                height: calc(100dvh - 70px);
+            }
+
+            .chat-messages {
+                flex: 1;
+                min-height: 0;
+            }
+
+            .chat-input-container {
+                position: sticky;
+                bottom: 0;
+                background: var(--bg-dark);
+                padding: 10px;
+                margin: 0 -10px;
+                margin-top: 10px;
+                padding-bottom: env(safe-area-inset-bottom, 10px);
+            }
+
+            .chat-input {
+                padding: 14px 16px;
+                font-size: 16px;
+            }
+
+            .btn-send {
+                width: 50px;
+                height: 50px;
             }
 
             .message {
                 max-width: 95%;
             }
 
-            .profile-options {
-                flex-direction: column;
+            .profil-container {
+                padding: 20px 15px;
             }
         }
 
@@ -829,21 +807,35 @@
                 font-size: 20px;
             }
 
-            .btn-logout span {
-                display: none;
-            }
-
-            .btn-logout::after {
-                content: '🚪';
-                font-size: 18px;
-            }
-
             .hero h1 {
                 font-size: 28px;
             }
 
             .section-title h2 {
                 font-size: 22px;
+            }
+
+            .chat-header {
+                padding: 15px;
+            }
+
+            .chat-header-icon {
+                font-size: 36px;
+            }
+
+            .chat-header-info h2 {
+                font-size: 16px;
+            }
+
+            .chat-header-info p {
+                font-size: 12px;
+            }
+        }
+
+        /* Fix pour iOS Safari - clavier */
+        @supports (-webkit-touch-callout: none) {
+            .chat-container {
+                height: -webkit-fill-available;
             }
         }
     </style>
@@ -855,7 +847,14 @@
             <span class="nav-icon">🎓</span>
             <span class="nav-title">KELASSI</span>
         </div>
-        <div class="nav-links">
+        
+        <div class="hamburger" id="hamburger">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+
+        <div class="nav-links" id="navLinks">
             <a href="#" class="nav-link active" data-page="accueil">
                 <span class="link-icon">🏠</span>
                 <span>Accueil</span>
@@ -868,9 +867,13 @@
                 <span class="link-icon">👤</span>
                 <span>Profil</span>
             </a>
+            <button class="btn-logout mobile-logout" id="btnLogoutMobile">
+                Déconnexion
+            </button>
         </div>
-        <button class="btn-logout" id="btnLogout">
-            <span>Déconnexion</span>
+
+        <button class="btn-logout desktop-logout" id="btnLogout">
+            Déconnexion
         </button>
     </nav>
 
@@ -1004,35 +1007,6 @@
         </div>
     </section>
 
-    <!-- Modal -->
-    <div class="modal" id="modalProfil">
-        <div class="modal-content">
-            <div class="modal-header">
-                <span class="modal-icon">🎯</span>
-                <h2>Avant de commencer</h2>
-                <p>Dis-nous qui tu es pour personnaliser ton expérience</p>
-            </div>
-
-            <div class="modal-body">
-                <label class="modal-label">Tu es :</label>
-                <div class="profile-options">
-                    <div class="profile-option" data-profile="eleve">
-                        <span class="option-icon">🎓</span>
-                        <span class="option-text">Élève</span>
-                    </div>
-                    <div class="profile-option" data-profile="autodidacte">
-                        <span class="option-icon">💼</span>
-                        <span class="option-text">Autodidacte</span>
-                    </div>
-                </div>
-
-                <button class="btn-primary btn-full" id="btnConfirmProfile">
-                    Commencer 🚀
-                </button>
-            </div>
-        </div>
-    </div>
-
     <script>
         // ============================================
         // CONFIGURATION
@@ -1059,9 +1033,9 @@
             log('🚀 Application KELASSI initialisée');
             checkAuth();
             initNavigation();
+            initHamburger();
             initChat();
             initProfil();
-            initModal();
             initLogout();
         });
 
@@ -1082,6 +1056,7 @@
                 return;
             }
             
+            // Charger le profil depuis localStorage
             if (userProfileStr) {
                 try {
                     userProfile = JSON.parse(userProfileStr);
@@ -1107,12 +1082,40 @@
             }
             
             userProfile.name = userName;
+            userProfile.user_id = userId;
+            
+            log('Profil final:', userProfile);
+            
             updateProfilDisplay();
             addWelcomeMessage();
         }
 
         function redirectToLogin() {
             window.location.href = CONFIG.PAGE_CONNEXION;
+        }
+
+        // ============================================
+        // MENU HAMBURGER
+        // ============================================
+
+        function initHamburger() {
+            const hamburger = document.getElementById('hamburger');
+            const navLinks = document.getElementById('navLinks');
+            
+            if (hamburger && navLinks) {
+                hamburger.addEventListener('click', function() {
+                    hamburger.classList.toggle('active');
+                    navLinks.classList.toggle('active');
+                });
+
+                // Fermer le menu quand on clique sur un lien
+                navLinks.querySelectorAll('.nav-link').forEach(link => {
+                    link.addEventListener('click', function() {
+                        hamburger.classList.remove('active');
+                        navLinks.classList.remove('active');
+                    });
+                });
+            }
         }
 
         // ============================================
@@ -1166,6 +1169,9 @@
                     if (chatInput) chatInput.focus();
                 }, 100);
             }
+
+            // Scroll en haut de la page
+            window.scrollTo(0, 0);
         }
 
         // ============================================
@@ -1185,6 +1191,13 @@
                     e.preventDefault();
                     sendMessage();
                 }
+            });
+
+            // Fix pour mobile : scroll quand le clavier apparaît
+            chatInput.addEventListener('focus', function() {
+                setTimeout(() => {
+                    this.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }, 300);
             });
         }
 
@@ -1359,6 +1372,8 @@
         function updateProfilDisplay() {
             if (!userProfile) return;
             
+            log('Mise à jour affichage profil:', userProfile);
+            
             const profilName = document.getElementById('profilName');
             if (profilName) {
                 profilName.textContent = userProfile.name || 'Utilisateur';
@@ -1410,71 +1425,18 @@
         }
 
         // ============================================
-        // MODAL
-        // ============================================
-
-        function initModal() {
-            const modal = document.getElementById('modalProfil');
-            const profileOptions = document.querySelectorAll('.profile-option');
-            const btnConfirm = document.getElementById('btnConfirmProfile');
-            
-            if (!modal) return;
-            
-            profileOptions.forEach(option => {
-                option.addEventListener('click', function() {
-                    profileOptions.forEach(opt => opt.classList.remove('selected'));
-                    this.classList.add('selected');
-                });
-            });
-            
-            if (btnConfirm) {
-                btnConfirm.addEventListener('click', function() {
-                    const selectedOption = document.querySelector('.profile-option.selected');
-                    if (!selectedOption) {
-                        alert('Merci de sélectionner ton profil');
-                        return;
-                    }
-                    
-                    const profile = selectedOption.dataset.profile;
-                    
-                    userProfile.profile = profile;
-                    localStorage.setItem('kelassi_user_profile', profile);
-                    
-                    const profileForStorage = {
-                        ...userProfile,
-                        profile: profile
-                    };
-                    localStorage.setItem('kelassiProfile', JSON.stringify(profileForStorage));
-                    
-                    closeModal();
-                    updateProfilDisplay();
-                });
-            }
-        }
-
-        function showModal() {
-            const modal = document.getElementById('modalProfil');
-            if (modal) {
-                modal.classList.add('active');
-            }
-        }
-
-        function closeModal() {
-            const modal = document.getElementById('modalProfil');
-            if (modal) {
-                modal.classList.remove('active');
-            }
-        }
-
-        // ============================================
         // DÉCONNEXION
         // ============================================
 
         function initLogout() {
             const btnLogout = document.getElementById('btnLogout');
+            const btnLogoutMobile = document.getElementById('btnLogoutMobile');
             
             if (btnLogout) {
                 btnLogout.addEventListener('click', logout);
+            }
+            if (btnLogoutMobile) {
+                btnLogoutMobile.addEventListener('click', logout);
             }
         }
 
@@ -1501,4 +1463,3 @@
     </script>
 </body>
 </html>
-
