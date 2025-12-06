@@ -771,6 +771,34 @@
             font-weight: 600;
             font-size: 16px;
         }
+         /* HAMBURGER MENU */
+        .hamburger {
+            display: none;
+            flex-direction: column;
+            gap: 5px;
+            cursor: pointer;
+            padding: 10px;
+            z-index: 1001;
+        }
+         .hamburger span {
+            width: 25px;
+            height: 3px;
+            background: var(--text-white);
+            border-radius: 3px;
+            transition: all 0.3s ease;
+        }
+
+        .hamburger.active span:nth-child(1) {
+            transform: rotate(45deg) translate(5px, 5px);
+        }
+
+        .hamburger.active span:nth-child(2) {
+            opacity: 0;
+        }
+
+        .hamburger.active span:nth-child(3) {
+            transform: rotate(-45deg) translate(7px, -7px);
+        }
 
         /* RESPONSIVE */
         @media (max-width: 768px) {
@@ -780,14 +808,37 @@
                 gap: 15px;
             }
 
-            .nav-links {
-                order: 3;
-                width: 100%;
-                justify-content: center;
+            .hamburger {
+                display: flex;
             }
 
-            .nav-link span:not(.link-icon) {
-                display: none;
+            .nav-links {
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background: rgba(15, 23, 42, 0.98);
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                gap: 20px;
+                transform: translateX(-100%);
+                transition: transform 0.3s ease;
+                z-index: 999;
+            }
+
+            .nav-links.active {
+                transform: translateX(0);
+            }
+
+           .nav-link {
+                font-size: 18px;
+                padding: 15px 30px;
+            }
+
+            .btn-logout {
+                margin-top: 20px;
             }
 
             .nav-link {
@@ -869,7 +920,12 @@
             <span class="nav-icon">🎓</span>
             <span class="nav-title">KELASSI</span>
         </div>
-        <div class="nav-links">
+        <div class="hamburger" id="hamburger">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+        <div class="nav-links" id="navLinks">
             <a href="#" class="nav-link active" data-page="accueil">
                 <span class="link-icon">🏠</span>
                 <span>Accueil</span>
@@ -1073,6 +1129,7 @@
             log('🚀 Application KELASSI initialisée');
             checkAuth();
             initNavigation();
+            initHamburger();
             initChat();
             initProfil();
             initModal();
@@ -1152,6 +1209,30 @@
             const btnGoToChat = document.getElementById('btnGoToChat');
             if (btnGoToChat) {
                 btnGoToChat.addEventListener('click', () => navigateTo('prof'));
+            }
+        }
+
+        // ============================================
+        // HAMBURGER MENU
+        // ============================================
+
+        function initHamburger() {
+            const hamburger = document.getElementById('hamburger');
+            const navLinks = document.getElementById('navLinks');
+            
+            if (hamburger && navLinks) {
+                hamburger.addEventListener('click', function() {
+                    hamburger.classList.toggle('active');
+                    navLinks.classList.toggle('active');
+                });
+
+                // Fermer le menu quand on clique sur un lien
+                navLinks.querySelectorAll('.nav-link').forEach(link => {
+                    link.addEventListener('click', function() {
+                        hamburger.classList.remove('active');
+                        navLinks.classList.remove('active');
+                    });
+                });
             }
         }
 
@@ -1521,5 +1602,6 @@
     </script>
 </body>
 </html>
+
 
 
