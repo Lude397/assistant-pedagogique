@@ -793,6 +793,20 @@
             .nav-link {
                 padding: 10px 15px;
             }
+             .chat-container {
+                height: calc(100vh - 70px);
+                padding: 10px;
+                padding-bottom: 100px;
+            }
+            .chat-input-container {
+                position: fixed;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                background: var(--bg-dark);
+                padding: 15px;
+                border-top: 1px solid rgba(255, 255, 255, 0.1);
+            }
 
             .hero h1 {
                 font-size: 32px;
@@ -1186,6 +1200,12 @@
                     sendMessage();
                 }
             });
+                 // Fix pour mobile : scroll quand le clavier apparaît
+            chatInput.addEventListener('focus', function() {
+                setTimeout(function() {
+                    chatInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }, 300);
+            });
         }
 
         function addWelcomeMessage() {
@@ -1501,4 +1521,5 @@
     </script>
 </body>
 </html>
+
 
