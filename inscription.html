@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>KELASSI - Plateforme d'Apprentissage</title>
+    <title>Inscription / Connexion - KELASSI</title>
     <style>
         * {
             margin: 0;
@@ -17,7 +17,10 @@
             background-size: 400% 400%;
             animation: gradientShift 15s ease infinite;
             min-height: 100vh;
-            overflow-x: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
         }
 
         @keyframes gradientShift {
@@ -26,34 +29,24 @@
             100% { background-position: 0% 50%; }
         }
 
-        /* Barre de navigation DESKTOP */
-        nav {
-            background: rgba(255, 255, 255, 0.1);
+        .container {
+            background: rgba(255, 255, 255, 0.15);
             backdrop-filter: blur(20px);
-            border-bottom: 2px solid rgba(255, 255, 255, 0.2);
-            padding: 0 30px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            height: 80px;
-            position: sticky;
-            top: 0;
-            z-index: 1000;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            border-radius: 30px;
+            padding: 50px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            max-width: 500px;
+            width: 100%;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
         }
 
         .logo {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            font-size: 28px;
-            font-weight: bold;
-            color: white;
-            text-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
+            text-align: center;
+            margin-bottom: 30px;
         }
 
         .logo-icon {
-            font-size: 36px;
+            font-size: 60px;
             animation: bounce 2s infinite;
         }
 
@@ -62,616 +55,74 @@
             50% { transform: translateY(-10px); }
         }
 
-        .nav-menu {
-            display: flex;
-            gap: 5px;
-            list-style: none;
-            align-items: center;
-        }
-
-        .nav-item {
-            position: relative;
-        }
-
-        .nav-link {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            padding: 12px 20px;
-            color: white;
-            text-decoration: none;
-            border-radius: 50px;
-            transition: all 0.3s ease;
-            font-weight: 500;
-            position: relative;
-            overflow: hidden;
-            cursor: pointer;
-        }
-
-        .nav-link::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
-            transition: left 0.5s;
-        }
-
-        .nav-link:hover::before {
-            left: 100%;
-        }
-
-        .nav-link:hover {
-            background: rgba(255, 255, 255, 0.2);
-            transform: translateY(-3px);
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-        }
-
-        .nav-link.active {
-            background: rgba(255, 255, 255, 0.25);
-            box-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
-        }
-
-        .btn-connect {
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            color: white;
-            padding: 12px 30px;
-            border-radius: 50px;
-            text-decoration: none;
-            font-weight: bold;
-            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
-            transition: all 0.3s ease;
-            border: 2px solid rgba(255, 255, 255, 0.3);
-            cursor: pointer;
-        }
-
-        .btn-connect:hover {
-            transform: scale(1.05);
-            box-shadow: 0 8px 30px rgba(102, 126, 234, 0.6);
-        }
-
-        /* Menu Hamburger MOBILE */
-        .hamburger-btn {
-            display: none;
-            background: none;
-            border: none;
-            color: white;
-            font-size: 32px;
-            cursor: pointer;
-            padding: 10px;
-        }
-
-        .mobile-menu {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: -100%;
-            width: 80%;
-            max-width: 300px;
-            height: 100vh;
-            background: rgba(102, 126, 234, 0.95);
-            backdrop-filter: blur(20px);
-            z-index: 2000;
-            transition: left 0.3s ease;
-            overflow-y: auto;
-            padding: 30px 20px;
-        }
-
-        .mobile-menu.active {
-            left: 0;
-        }
-
-        .mobile-menu-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 40px;
-            padding-bottom: 20px;
-            border-bottom: 2px solid rgba(255, 255, 255, 0.3);
-        }
-
-        .mobile-menu-header h3 {
-            color: white;
-            font-size: 24px;
-        }
-
-        .close-menu-btn {
-            background: none;
-            border: none;
-            color: white;
-            font-size: 32px;
-            cursor: pointer;
-        }
-
-        .mobile-menu-items {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-        }
-
-        .mobile-menu-item {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            padding: 15px 20px;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 15px;
-            color: white;
-            text-decoration: none;
-            font-size: 18px;
-            font-weight: 500;
-            transition: all 0.3s;
-            cursor: pointer;
-        }
-
-        .mobile-menu-item:hover {
-            background: rgba(255, 255, 255, 0.2);
-            transform: translateX(5px);
-        }
-
-        .mobile-menu-item span:first-child {
-            font-size: 24px;
-        }
-
-        .mobile-connect-btn {
-            margin-top: 30px;
-            background: linear-gradient(135deg, #f093fb, #4facfe);
-            color: white;
-            padding: 15px;
-            border-radius: 15px;
-            text-align: center;
-            font-weight: bold;
-            cursor: pointer;
-        }
-
-        .menu-overlay {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.5);
-            z-index: 1999;
-        }
-
-        .menu-overlay.active {
-            display: block;
-        }
-
-        /* Barre de retour MOBILE */
-        .mobile-back-bar {
-            display: none;
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(20px);
-            padding: 15px 20px;
-            border-bottom: 2px solid rgba(255, 255, 255, 0.2);
-            position: sticky;
-            top: 0;
-            z-index: 999;
-        }
-
-        .mobile-back-btn {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            background: none;
-            border: none;
-            color: white;
-            font-size: 20px;
-            font-weight: 600;
-            cursor: pointer;
-        }
-
-        .mobile-back-btn .arrow {
-            font-size: 24px;
-        }
-
-        /* Contenu principal */
-        .main-content {
-            display: none;
-            min-height: calc(100vh - 80px);
-            padding: 40px 20px;
-        }
-
-        .main-content.active {
-            display: block;
-        }
-
-        /* Page Accueil */
-        .hero {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            min-height: calc(100vh - 160px);
-            text-align: center;
-            position: relative;
-        }
-
-        /* Particules flottantes */
-        .particle {
-            position: absolute;
-            background: rgba(255, 255, 255, 0.3);
-            border-radius: 50%;
-            animation: float 20s infinite;
-        }
-
-        @keyframes float {
-            0%, 100% { transform: translateY(0) rotate(0deg); opacity: 0; }
-            10% { opacity: 1; }
-            90% { opacity: 1; }
-            100% { transform: translateY(-1000px) rotate(720deg); opacity: 0; }
-        }
-
-        .particle:nth-child(1) { width: 80px; height: 80px; left: 10%; animation-delay: 0s; }
-        .particle:nth-child(2) { width: 60px; height: 60px; left: 20%; animation-delay: 2s; }
-        .particle:nth-child(3) { width: 100px; height: 100px; left: 50%; animation-delay: 4s; }
-        .particle:nth-child(4) { width: 70px; height: 70px; left: 70%; animation-delay: 6s; }
-        .particle:nth-child(5) { width: 90px; height: 90px; left: 85%; animation-delay: 8s; }
-
         h1 {
-            font-size: 72px;
             color: white;
-            margin-bottom: 20px;
-            text-shadow: 0 0 40px rgba(255, 255, 255, 0.5);
-            animation: titleGlow 3s ease-in-out infinite;
-        }
-
-        @keyframes titleGlow {
-            0%, 100% { text-shadow: 0 0 40px rgba(255, 255, 255, 0.5); }
-            50% { text-shadow: 0 0 80px rgba(255, 255, 255, 0.8), 0 0 100px rgba(102, 126, 234, 0.5); }
+            font-size: 36px;
+            text-align: center;
+            margin-bottom: 10px;
+            text-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
         }
 
         .subtitle {
-            font-size: 24px;
             color: rgba(255, 255, 255, 0.9);
+            text-align: center;
             margin-bottom: 40px;
-            max-width: 700px;
-        }
-
-        .features {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 30px;
-            max-width: 1200px;
-            width: 100%;
-            margin-top: 60px;
-        }
-
-        .feature-card {
-            background: rgba(255, 255, 255, 0.15);
-            backdrop-filter: blur(10px);
-            border-radius: 20px;
-            padding: 40px 30px;
-            border: 2px solid rgba(255, 255, 255, 0.2);
-            transition: all 0.4s ease;
-            cursor: pointer;
-        }
-
-        .feature-card:hover {
-            transform: translateY(-10px) scale(1.05);
-            background: rgba(255, 255, 255, 0.25);
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-        }
-
-        .feature-icon {
-            font-size: 50px;
-            margin-bottom: 20px;
-            display: inline-block;
-            animation: rotate 3s linear infinite;
-        }
-
-        @keyframes rotate {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
-        }
-
-        .feature-card:hover .feature-icon {
-            animation-play-state: paused;
-        }
-
-        .feature-title {
-            font-size: 24px;
-            color: white;
-            margin-bottom: 15px;
-            font-weight: bold;
-        }
-
-        .feature-desc {
-            color: rgba(255, 255, 255, 0.8);
-            line-height: 1.6;
-        }
-
-        /* Page Prof IA (Chat) */
-        .chat-container {
-            max-width: 900px;
-            margin: 0 auto;
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(20px);
-            border-radius: 30px;
-            padding: 30px;
-            border: 2px solid rgba(255, 255, 255, 0.2);
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
-            height: calc(100vh - 200px);
-            display: flex;
-            flex-direction: column;
-        }
-
-        .chat-header {
-            text-align: center;
-            padding-bottom: 20px;
-            border-bottom: 2px solid rgba(255, 255, 255, 0.2);
-            margin-bottom: 20px;
-        }
-
-        .chat-header h2 {
-            font-size: 32px;
-            color: white;
-            margin-bottom: 10px;
-        }
-
-        .chat-header p {
-            color: rgba(255, 255, 255, 0.8);
-        }
-
-        .chat-messages {
-            flex: 1;
-            overflow-y: auto;
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-        }
-
-        .chat-messages::-webkit-scrollbar {
-            width: 8px;
-        }
-
-        .chat-messages::-webkit-scrollbar-track {
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 10px;
-        }
-
-        .chat-messages::-webkit-scrollbar-thumb {
-            background: rgba(255, 255, 255, 0.3);
-            border-radius: 10px;
-        }
-
-        .message {
-            display: flex;
-            gap: 15px;
-            align-items: flex-start;
-            animation: slideIn 0.3s ease;
-        }
-
-        @keyframes slideIn {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .message.user {
-            flex-direction: row-reverse;
-        }
-
-        .message-avatar {
-            width: 45px;
-            height: 45px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 24px;
-            flex-shrink: 0;
-        }
-
-        .message.assistant .message-avatar {
-            background: linear-gradient(135deg, #667eea, #764ba2);
-        }
-
-        .message.user .message-avatar {
-            background: linear-gradient(135deg, #f093fb, #4facfe);
-        }
-
-        .message-content {
-            background: rgba(255, 255, 255, 0.15);
-            backdrop-filter: blur(10px);
-            padding: 15px 20px;
-            border-radius: 20px;
-            max-width: 70%;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-        }
-
-        .message.user .message-content {
-            background: rgba(255, 255, 255, 0.25);
-        }
-
-        .message-text {
-            color: white;
-            line-height: 1.6;
-            white-space: pre-wrap;
-        }
-
-        .message-time {
-            font-size: 12px;
-            color: rgba(255, 255, 255, 0.6);
-            margin-top: 8px;
-        }
-
-        .chat-input-container {
-            display: flex;
-            gap: 15px;
-            padding-top: 20px;
-            border-top: 2px solid rgba(255, 255, 255, 0.2);
-        }
-
-        .chat-input {
-            flex: 1;
-            background: rgba(255, 255, 255, 0.15);
-            border: 2px solid rgba(255, 255, 255, 0.3);
-            border-radius: 25px;
-            padding: 15px 25px;
-            color: white;
             font-size: 16px;
-            outline: none;
-            transition: all 0.3s;
         }
 
-        .chat-input::placeholder {
-            color: rgba(255, 255, 255, 0.6);
-        }
-
-        .chat-input:focus {
-            background: rgba(255, 255, 255, 0.2);
-            border-color: rgba(255, 255, 255, 0.5);
-        }
-
-        .chat-send-btn {
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            border: none;
-            width: 55px;
-            height: 55px;
-            border-radius: 50%;
-            color: white;
-            font-size: 24px;
-            cursor: pointer;
-            transition: all 0.3s;
+        .tabs {
             display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .chat-send-btn:hover {
-            transform: scale(1.1);
-            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.5);
-        }
-
-        .chat-send-btn:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-            transform: scale(1);
-        }
-
-        .typing-indicator {
-            display: none;
-            align-items: center;
-            gap: 15px;
-        }
-
-        .typing-indicator.active {
-            display: flex;
-        }
-
-        .typing-dots {
-            display: flex;
-            gap: 5px;
-        }
-
-        .typing-dot {
-            width: 8px;
-            height: 8px;
-            background: rgba(255, 255, 255, 0.6);
-            border-radius: 50%;
-            animation: typing 1.4s infinite;
-        }
-
-        .typing-dot:nth-child(2) {
-            animation-delay: 0.2s;
-        }
-
-        .typing-dot:nth-child(3) {
-            animation-delay: 0.4s;
-        }
-
-        @keyframes typing {
-            0%, 60%, 100% {
-                transform: translateY(0);
-            }
-            30% {
-                transform: translateY(-10px);
-            }
-        }
-
-        /* Modal de profil */
-        .profile-modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.8);
-            z-index: 2000;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .profile-modal.active {
-            display: flex;
-        }
-
-        .profile-modal-content {
-            background: rgba(255, 255, 255, 0.15);
-            backdrop-filter: blur(20px);
-            border-radius: 30px;
-            padding: 50px;
-            border: 2px solid rgba(255, 255, 255, 0.3);
-            max-width: 500px;
-            width: 90%;
-            animation: modalSlideIn 0.4s ease;
-        }
-
-        @keyframes modalSlideIn {
-            from {
-                opacity: 0;
-                transform: scale(0.8);
-            }
-            to {
-                opacity: 1;
-                transform: scale(1);
-            }
-        }
-
-        .profile-modal h2 {
-            color: white;
-            font-size: 32px;
-            margin-bottom: 10px;
-            text-align: center;
-        }
-
-        .profile-modal p {
-            color: rgba(255, 255, 255, 0.8);
-            text-align: center;
+            gap: 10px;
             margin-bottom: 30px;
         }
 
-        .profile-form {
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
+        .tab {
+            flex: 1;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 15px;
+            color: rgba(255, 255, 255, 0.7);
+            text-align: center;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .tab:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .tab.active {
+            background: rgba(255, 255, 255, 0.25);
+            border-color: #4facfe;
+            color: white;
+            box-shadow: 0 0 20px rgba(79, 172, 254, 0.5);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
         }
 
         .form-group {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
+            margin-bottom: 25px;
         }
 
         .form-group label {
+            display: block;
             color: white;
             font-weight: 600;
+            margin-bottom: 10px;
+            font-size: 14px;
         }
 
-        .form-group select,
-        .form-group input {
+        .form-group input,
+        .form-group select {
+            width: 100%;
             background: rgba(255, 255, 255, 0.1);
             border: 2px solid rgba(255, 255, 255, 0.3);
             border-radius: 15px;
@@ -679,6 +130,17 @@
             color: white;
             font-size: 16px;
             outline: none;
+            transition: all 0.3s;
+        }
+
+        .form-group input::placeholder {
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            background: rgba(255, 255, 255, 0.2);
+            border-color: rgba(255, 255, 255, 0.5);
         }
 
         .form-group select option {
@@ -688,7 +150,8 @@
 
         .radio-group {
             display: flex;
-            gap: 20px;
+            gap: 15px;
+            margin-top: 10px;
         }
 
         .radio-option {
@@ -707,27 +170,35 @@
             border-color: rgba(255, 255, 255, 0.5);
         }
 
-        .radio-option input[type="radio"] {
-            display: none;
-        }
-
-        .radio-option input[type="radio"]:checked + label {
-            color: #4facfe;
-        }
-
         .radio-option.selected {
             background: rgba(255, 255, 255, 0.25);
             border-color: #4facfe;
+            box-shadow: 0 0 20px rgba(79, 172, 254, 0.5);
+        }
+
+        .radio-option input[type="radio"] {
+            display: none;
         }
 
         .radio-option label {
             color: white;
             font-weight: 600;
             cursor: pointer;
-            font-size: 18px;
+            font-size: 16px;
+            display: block;
         }
 
-        .profile-submit {
+        .radio-option .icon {
+            font-size: 32px;
+            margin-bottom: 10px;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .submit-btn {
+            width: 100%;
             background: linear-gradient(135deg, #667eea, #764ba2);
             color: white;
             padding: 18px;
@@ -740,717 +211,485 @@
             margin-top: 10px;
         }
 
-        .profile-submit:hover {
+        .submit-btn:hover {
             transform: translateY(-3px);
             box-shadow: 0 10px 30px rgba(102, 126, 234, 0.5);
         }
 
-        .hidden {
-            display: none !important;
+        .submit-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
         }
 
-        /* Pages autres onglets */
-        .page-content {
-            max-width: 1200px;
-            margin: 0 auto;
+        .loading {
+            display: none;
             text-align: center;
-        }
-
-        .page-content h2 {
-            font-size: 48px;
             color: white;
-            margin-bottom: 20px;
+            margin-top: 20px;
         }
 
-        .page-content p {
-            font-size: 20px;
-            color: rgba(255, 255, 255, 0.8);
+        .loading.active {
+            display: block;
         }
 
-        /* Responsive MOBILE */
-        @media (max-width: 768px) {
-            /* Cacher la navigation desktop */
-            nav {
-                padding: 15px 20px;
-                height: 60px;
-            }
+        .loading-spinner {
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-top: 3px solid white;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 10px;
+        }
 
-            .nav-menu,
-            .btn-connect {
-                display: none !important;
-            }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
 
-            /* Afficher le hamburger */
-            .hamburger-btn {
-                display: block;
-            }
+        .error-message,
+        .success-message {
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 20px;
+            display: none;
+        }
 
-            .mobile-menu {
-                display: block;
-            }
+        .error-message {
+            background: rgba(244, 67, 54, 0.2);
+            border: 2px solid rgba(244, 67, 54, 0.5);
+            color: white;
+        }
 
-            /* Afficher la barre de retour sur les pages */
-            .main-content:not(#page-accueil) .mobile-back-bar {
-                display: block;
-            }
+        .success-message {
+            background: rgba(76, 175, 80, 0.2);
+            border: 2px solid rgba(76, 175, 80, 0.5);
+            color: white;
+        }
 
-            /* Plein écran sur mobile */
-            .main-content {
-                padding: 0;
-                min-height: 100vh;
-            }
+        .error-message.active,
+        .success-message.active {
+            display: block;
+        }
 
-            .main-content.active {
-                position: fixed;
-                top: 0;
-                left: 0;
-                width: 100%;
-                height: 100vh;
-                z-index: 998;
-            }
-
-            #page-accueil.active {
-                position: relative;
-            }
-
-            /* Ajuster le hero pour mobile */
-            h1 {
-                font-size: 42px;
-            }
-
-            .subtitle {
-                font-size: 18px;
-            }
-
-            .features {
-                grid-template-columns: 1fr;
-                padding: 0 20px;
-            }
-
-            /* Chat mobile plein écran */
-            .chat-container {
-                height: calc(100vh - 60px);
-                margin: 0;
-                border-radius: 0;
-                padding: 20px;
-            }
-
-            .chat-header h2 {
-                font-size: 24px;
-            }
-
-            .message-content {
-                max-width: 85%;
-            }
-
-            /* Modal profil mobile */
-            .profile-modal-content {
+        @media (max-width: 600px) {
+            .container {
                 padding: 30px 20px;
-                margin: 20px;
             }
 
-            .profile-modal h2 {
-                font-size: 24px;
+            h1 {
+                font-size: 28px;
             }
 
             .radio-group {
                 flex-direction: column;
             }
 
-            /* Page content mobile */
-            .page-content {
-                padding: 80px 20px 20px 20px;
-            }
-
-            .page-content h2 {
-                font-size: 32px;
-            }
-
-            .page-content p {
-                font-size: 16px;
+            .tabs {
+                flex-direction: column;
             }
         }
     </style>
 </head>
 <body>
-    <!-- Particules flottantes -->
-    <div class="particle"></div>
-    <div class="particle"></div>
-    <div class="particle"></div>
-    <div class="particle"></div>
-    <div class="particle"></div>
+    <div class="container">
+        <div class="logo">
+            <div class="logo-icon">🎓</div>
+            <h1>KELASSI</h1>
+            <p class="subtitle">Ton professeur virtuel personnalisé</p>
+        </div>
 
-    <!-- Modal de profil -->
-    <div class="profile-modal" id="profileModal">
-        <div class="profile-modal-content">
-            <h2>🎯 Avant de commencer</h2>
-            <p>Dis-nous qui tu es pour personnaliser ton expérience</p>
-            
-            <form class="profile-form" id="profileForm">
+        <div class="tabs">
+            <div class="tab active" onclick="switchTab('inscription')">
+                Créer un compte
+            </div>
+            <div class="tab" onclick="switchTab('connexion')">
+                Connexion
+            </div>
+        </div>
+
+        <!-- INSCRIPTION -->
+        <div id="inscriptionTab" class="tab-content active">
+            <form id="inscriptionForm">
+                <div class="form-group">
+                    <label for="inscriptionName">Ton prénom</label>
+                    <input type="text" id="inscriptionName" placeholder="Ex: Luderick" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="inscriptionPhone">Ton numéro de téléphone</label>
+                    <input type="tel" id="inscriptionPhone" placeholder="Ex: +242 06 123 4567" required>
+                </div>
+
                 <div class="form-group">
                     <label>Tu es :</label>
                     <div class="radio-group">
                         <div class="radio-option" onclick="selectProfile('eleve')">
-                            <input type="radio" name="profile" value="eleve" id="profileEleve">
-                            <label for="profileEleve">🎓 Élève</label>
+                            <input type="radio" name="inscriptionProfile" value="eleve" id="profileEleve">
+                            <label for="profileEleve">
+                                <div class="icon">🎓</div>
+                                Élève
+                            </label>
                         </div>
                         <div class="radio-option" onclick="selectProfile('autodidacte')">
-                            <input type="radio" name="profile" value="autodidacte" id="profileAuto">
-                            <label for="profileAuto">💼 Autodidacte</label>
+                            <input type="radio" name="inscriptionProfile" value="autodidacte" id="profileAuto">
+                            <label for="profileAuto">
+                                <div class="icon">💼</div>
+                                Autodidacte
+                            </label>
                         </div>
                     </div>
                 </div>
 
-                <div class="form-group hidden" id="eleveFields">
-                    <label>Niveau scolaire :</label>
-                    <select id="schoolLevel">
-                        <option value="">-- Choisis ton niveau --</option>
-                        <option value="6ème">6ème</option>
-                        <option value="5ème">5ème</option>
-                        <option value="4ème">4ème</option>
-                        <option value="3ème">3ème</option>
-                        <option value="2nde">2nde</option>
-                        <option value="1ère">1ère</option>
-                        <option value="Terminale">Terminale</option>
-                        <option value="Licence">Licence</option>
-                    </select>
+                <div id="eleveFields" class="hidden">
+                    <div class="form-group">
+                        <label for="schoolLevel">Niveau scolaire</label>
+                        <select id="schoolLevel">
+                            <option value="">-- Choisis ton niveau --</option>
+                            <option value="6ème">6ème</option>
+                            <option value="5ème">5ème</option>
+                            <option value="4ème">4ème</option>
+                            <option value="3ème">3ème</option>
+                            <option value="2nde">2nde</option>
+                            <option value="1ère">1ère</option>
+                            <option value="Terminale">Terminale</option>
+                            <option value="Licence">Licence</option>
+                            <option value="Master">Master</option>
+                        </select>
+                    </div>
 
-                    <label>Filière (si applicable) :</label>
-                    <input type="text" id="filiere" placeholder="Ex: C, A, D, STI2D, etc.">
+                    <div class="form-group">
+                        <label for="filiere">Filière (optionnel)</label>
+                        <input type="text" id="filiere" placeholder="Ex: C, A, D, STI2D, etc.">
+                    </div>
                 </div>
 
-                <div class="form-group hidden" id="autodidacteFields">
-                    <label>Niveau d'expérience :</label>
-                    <select id="level">
-                        <option value="">-- Choisis ton niveau --</option>
-                        <option value="débutant">Débutant</option>
-                        <option value="intermédiaire">Intermédiaire</option>
-                        <option value="avancé">Avancé</option>
-                    </select>
+                <div id="autodidacteFields" class="hidden">
+                    <div class="form-group">
+                        <label for="level">Niveau d'expérience</label>
+                        <select id="level">
+                            <option value="">-- Choisis ton niveau --</option>
+                            <option value="débutant">Débutant</option>
+                            <option value="intermédiaire">Intermédiaire</option>
+                            <option value="avancé">Avancé</option>
+                        </select>
+                    </div>
                 </div>
 
-                <button type="submit" class="profile-submit">Commencer 🚀</button>
+                <button type="submit" class="submit-btn" id="inscriptionBtn">
+                    Créer mon compte 🚀
+                </button>
             </form>
         </div>
-    </div>
 
-    <!-- Overlay du menu mobile -->
-    <div class="menu-overlay" id="menuOverlay" onclick="closeMobileMenu()"></div>
-
-    <!-- Menu mobile -->
-    <div class="mobile-menu" id="mobileMenu">
-        <div class="mobile-menu-header">
-            <h3>Menu</h3>
-            <button class="close-menu-btn" onclick="closeMobileMenu()">✕</button>
-        </div>
-        
-        <div class="mobile-menu-items">
-            <a class="mobile-menu-item" data-page="accueil">
-                <span>🏠</span>
-                <span>Accueil</span>
-            </a>
-            <a class="mobile-menu-item" data-page="lecon">
-                <span>📖</span>
-                <span>Leçon</span>
-            </a>
-            <a class="mobile-menu-item" data-page="questionnaire">
-                <span>🌐</span>
-                <span>Questionnaire</span>
-            </a>
-            <a class="mobile-menu-item" data-page="exercices">
-                <span>📝</span>
-                <span>Exercices</span>
-            </a>
-            <a class="mobile-menu-item" data-page="tableau">
-                <span>📊</span>
-                <span>Tableau de bord</span>
-            </a>
-            <a class="mobile-menu-item" data-page="prof-ia">
-                <span>🤖</span>
-                <span>Prof IA</span>
-            </a>
-            <a class="mobile-menu-item" data-page="profil">
-                <span>👤</span>
-                <span>Profil</span>
-            </a>
-        </div>
-
-        <div class="mobile-connect-btn">
-            Se connecter
-        </div>
-    </div>
-
-    <!-- Navigation DESKTOP -->
-    <nav>
-        <button class="hamburger-btn" onclick="openMobileMenu()">☰</button>
-        
-        <div class="logo">
-            <span class="logo-icon">🎓</span>
-            <span>KELASSI</span>
-        </div>
-        
-        <ul class="nav-menu">
-            <li class="nav-item">
-                <a class="nav-link active" data-page="accueil">
-                    <span>🏠</span>
-                    <span>Accueil</span>
-                </a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" data-page="lecon">
-                    <span>📖</span>
-                    <span>Leçon</span>
-                </a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" data-page="questionnaire">
-                    <span>🌐</span>
-                    <span>Questionnaire</span>
-                </a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" data-page="exercices">
-                    <span>📝</span>
-                    <span>Exercices</span>
-                </a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" data-page="tableau">
-                    <span>📊</span>
-                    <span>Tableau de bord</span>
-                </a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" data-page="prof-ia">
-                    <span>🤖</span>
-                    <span>Prof IA</span>
-                </a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" data-page="profil">
-                    <span>👤</span>
-                    <span>Profil</span>
-                </a>
-            </li>
-        </ul>
-
-        <a href="#" class="btn-connect">Se connecter</a>
-    </nav>
-
-    <!-- Page Accueil -->
-    <div class="main-content active" id="page-accueil">
-        <div class="hero">
-            <h1>Bienvenue sur KELASSI</h1>
-            <p class="subtitle">Votre plateforme d'apprentissage personnalisée pour réussir vos études avec des outils innovants et interactifs</p>
-
-            <div class="features">
-                <div class="feature-card">
-                    <div class="feature-icon">📚</div>
-                    <h3 class="feature-title">Leçons Interactives</h3>
-                    <p class="feature-desc">Apprenez à votre rythme avec des contenus adaptés à votre niveau</p>
+        <!-- CONNEXION -->
+        <div id="connexionTab" class="tab-content">
+            <form id="connexionForm">
+                <div class="form-group">
+                    <label for="connexionName">Ton prénom</label>
+                    <input type="text" id="connexionName" placeholder="Ex: Luderick" required>
                 </div>
 
-                <div class="feature-card">
-                    <div class="feature-icon">🎯</div>
-                    <h3 class="feature-title">Quiz Personnalisés</h3>
-                    <p class="feature-desc">Testez vos connaissances avec des questionnaires intelligents</p>
+                <div class="form-group">
+                    <label for="connexionPhone">Ton numéro de téléphone</label>
+                    <input type="tel" id="connexionPhone" placeholder="Ex: +242 06 123 4567" required>
                 </div>
 
-                <div class="feature-card">
-                    <div class="feature-icon">📈</div>
-                    <h3 class="feature-title">Suivi de Progression</h3>
-                    <p class="feature-desc">Visualisez votre évolution et identifiez vos points forts</p>
-                </div>
-
-                <div class="feature-card">
-                    <div class="feature-icon">🤖</div>
-                    <h3 class="feature-title">Prof IA Personnel</h3>
-                    <p class="feature-desc">Bénéficiez d'un professeur virtuel disponible 24/7</p>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Page Leçon -->
-    <div class="main-content" id="page-lecon">
-        <div class="mobile-back-bar">
-            <button class="mobile-back-btn" onclick="goToHome()">
-                <span class="arrow">←</span>
-                <span>Leçon</span>
-            </button>
-        </div>
-        <div class="page-content">
-            <h2>📖 Mes Leçons</h2>
-            <p>Vos leçons apparaîtront ici automatiquement après vos conversations avec le Prof IA</p>
-        </div>
-    </div>
-
-    <!-- Page Questionnaire -->
-    <div class="main-content" id="page-questionnaire">
-        <div class="mobile-back-bar">
-            <button class="mobile-back-btn" onclick="goToHome()">
-                <span class="arrow">←</span>
-                <span>Questionnaire</span>
-            </button>
-        </div>
-        <div class="page-content">
-            <h2>🌐 Mes Questionnaires</h2>
-            <p>Vos quiz et résultats s'afficheront ici</p>
-        </div>
-    </div>
-
-    <!-- Page Exercices -->
-    <div class="main-content" id="page-exercices">
-        <div class="mobile-back-bar">
-            <button class="mobile-back-btn" onclick="goToHome()">
-                <span class="arrow">←</span>
-                <span>Exercices</span>
-            </button>
-        </div>
-        <div class="page-content">
-            <h2>📝 Mes Exercices</h2>
-            <p>Vos exercices personnalisés seront disponibles ici</p>
-        </div>
-    </div>
-
-    <!-- Page Tableau de bord -->
-    <div class="main-content" id="page-tableau">
-        <div class="mobile-back-bar">
-            <button class="mobile-back-btn" onclick="goToHome()">
-                <span class="arrow">←</span>
-                <span>Tableau de bord</span>
-            </button>
-        </div>
-        <div class="page-content">
-            <h2>📊 Tableau de Bord</h2>
-            <p>Votre progression et statistiques apparaîtront ici</p>
-        </div>
-    </div>
-
-    <!-- Page Prof IA (Chat) -->
-    <div class="main-content" id="page-prof-ia">
-        <div class="mobile-back-bar">
-            <button class="mobile-back-btn" onclick="goToHome()">
-                <span class="arrow">←</span>
-                <span>Prof IA</span>
-            </button>
-        </div>
-        
-        <div class="chat-container">
-            <div class="chat-header">
-                <h2>🤖 Votre Professeur Virtuel</h2>
-                <p>Posez vos questions, je suis là pour vous aider !</p>
-            </div>
-
-            <div class="chat-messages" id="chatMessages">
-                <div class="message assistant">
-                    <div class="message-avatar">🤖</div>
-                    <div class="message-content">
-                        <div class="message-text">Bonjour ! Je suis ton professeur virtuel. Sur quel sujet veux-tu travailler aujourd'hui ?</div>
-                        <div class="message-time" id="initialTime"></div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="typing-indicator" id="typingIndicator">
-                <div class="message-avatar">🤖</div>
-                <div class="message-content">
-                    <div class="typing-dots">
-                        <div class="typing-dot"></div>
-                        <div class="typing-dot"></div>
-                        <div class="typing-dot"></div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="chat-input-container">
-                <input 
-                    type="text" 
-                    class="chat-input" 
-                    id="chatInput" 
-                    placeholder="Écris ta question ici..."
-                    onkeypress="handleKeyPress(event)"
-                >
-                <button class="chat-send-btn" id="sendBtn" onclick="sendMessage()">
-                    📤
+                <button type="submit" class="submit-btn" id="connexionBtn">
+                    Se connecter 🔓
                 </button>
-            </div>
+            </form>
         </div>
-    </div>
 
-    <!-- Page Profil -->
-    <div class="main-content" id="page-profil">
-        <div class="mobile-back-bar">
-            <button class="mobile-back-btn" onclick="goToHome()">
-                <span class="arrow">←</span>
-                <span>Profil</span>
-            </button>
+        <div class="loading" id="loading">
+            <div class="loading-spinner"></div>
+            <p id="loadingText">Chargement...</p>
         </div>
-        <div class="page-content">
-            <h2>👤 Mon Profil</h2>
-            <p>Vos informations personnelles et préférences</p>
-        </div>
+
+        <div class="error-message" id="errorMessage"></div>
+        <div class="success-message" id="successMessage"></div>
     </div>
 
     <script>
-        // Variables globales
-        let userProfile = {};
-        const WEBHOOK_URL = 'https://n8n.srv1090700.hstgr.cloud/webhook/assistant-pedagogique';
+        // ============================================
+        // CONFIGURATION
+        // ============================================
+        const CONFIG = {
+            WEBHOOK_INSCRIPTION: 'https://n8n.srv1090700.hstgr.cloud/webhook/inscription',
+            WEBHOOK_CONNEXION: 'https://n8n.srv1090700.hstgr.cloud/webhook/connexion',
+            REDIRECT_URL: 'https://lude397.github.io/assistant-pedagogique/index.html'
+        };
 
-        // Initialisation
-        document.addEventListener('DOMContentLoaded', function() {
-            // Vérifier si le profil existe dans localStorage
-            const savedProfile = localStorage.getItem('kelassiProfile');
-            
-            if (savedProfile) {
-                userProfile = JSON.parse(savedProfile);
+        // ============================================
+        // ONGLETS
+        // ============================================
+        function switchTab(tab) {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(tc => tc.classList.remove('active'));
+
+            if (tab === 'inscription') {
+                document.querySelectorAll('.tab')[0].classList.add('active');
+                document.getElementById('inscriptionTab').classList.add('active');
             } else {
-                // Afficher le modal de profil
-                document.getElementById('profileModal').classList.add('active');
+                document.querySelectorAll('.tab')[1].classList.add('active');
+                document.getElementById('connexionTab').classList.add('active');
             }
 
-            // Initialiser l'heure du message initial
-            document.getElementById('initialTime').textContent = getCurrentTime();
-
-            // Gérer la navigation
-            setupNavigation();
-        });
-
-        // Menu mobile
-        function openMobileMenu() {
-            document.getElementById('mobileMenu').classList.add('active');
-            document.getElementById('menuOverlay').classList.add('active');
+            hideMessages();
         }
 
-        function closeMobileMenu() {
-            document.getElementById('mobileMenu').classList.remove('active');
-            document.getElementById('menuOverlay').classList.remove('active');
-        }
-
-        function goToHome() {
-            // Retourner à l'accueil
-            document.querySelectorAll('.main-content').forEach(page => {
-                page.classList.remove('active');
-            });
-            document.getElementById('page-accueil').classList.add('active');
-
-            // Mettre à jour la navigation desktop
-            document.querySelectorAll('.nav-link').forEach(link => {
-                link.classList.remove('active');
-            });
-            document.querySelector('.nav-link[data-page="accueil"]').classList.add('active');
-        }
-
-        // Configuration du profil
+        // ============================================
+        // SÉLECTION PROFIL
+        // ============================================
         function selectProfile(type) {
-            const eleveFields = document.getElementById('eleveFields');
-            const autodidacteFields = document.getElementById('autodidacteFields');
             const options = document.querySelectorAll('.radio-option');
-
             options.forEach(opt => opt.classList.remove('selected'));
             event.currentTarget.classList.add('selected');
 
-            document.getElementById('profile' + (type === 'eleve' ? 'Eleve' : 'Auto')).checked = true;
+            document.getElementById(type === 'eleve' ? 'profileEleve' : 'profileAuto').checked = true;
 
             if (type === 'eleve') {
-                eleveFields.classList.remove('hidden');
-                autodidacteFields.classList.add('hidden');
+                document.getElementById('eleveFields').classList.remove('hidden');
+                document.getElementById('autodidacteFields').classList.add('hidden');
             } else {
-                eleveFields.classList.add('hidden');
-                autodidacteFields.classList.remove('hidden');
+                document.getElementById('eleveFields').classList.add('hidden');
+                document.getElementById('autodidacteFields').classList.remove('hidden');
             }
         }
 
-        // Soumission du formulaire de profil
-        document.getElementById('profileForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-
-            const profile = document.querySelector('input[name="profile"]:checked');
-            
-            if (!profile) {
-                alert('Merci de sélectionner un profil');
-                return;
-            }
-
-            userProfile = {
-                user_id: 'user_' + Date.now(),
-                profile: profile.value
-            };
-
-            if (profile.value === 'eleve') {
-                const schoolLevel = document.getElementById('schoolLevel').value;
-                const filiere = document.getElementById('filiere').value;
-
-                if (!schoolLevel) {
-                    alert('Merci de sélectionner ton niveau scolaire');
-                    return;
-                }
-
-                userProfile.school_level = schoolLevel;
-                userProfile.filiere = filiere || '';
-            } else {
-                const level = document.getElementById('level').value;
-
-                if (!level) {
-                    alert('Merci de sélectionner ton niveau d\'expérience');
-                    return;
-                }
-
-                userProfile.level = level;
-            }
-
-            // Sauvegarder dans localStorage
-            localStorage.setItem('kelassiProfile', JSON.stringify(userProfile));
-
-            // Fermer le modal
-            document.getElementById('profileModal').classList.remove('active');
-        });
-
-        // Navigation entre les pages
-        function setupNavigation() {
-            // Navigation desktop
-            const navLinks = document.querySelectorAll('.nav-link');
-            navLinks.forEach(link => {
-                link.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    navigateToPage(this.getAttribute('data-page'));
-                });
-            });
-
-            // Navigation mobile
-            const mobileLinks = document.querySelectorAll('.mobile-menu-item');
-            mobileLinks.forEach(link => {
-                link.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    navigateToPage(this.getAttribute('data-page'));
-                    closeMobileMenu();
-                });
-            });
-        }
-
-        function navigateToPage(pageName) {
-            // Retirer la classe active de tous les liens desktop
-            document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
-            
-            // Ajouter la classe active au lien cliqué (desktop)
-            const activeLink = document.querySelector(`.nav-link[data-page="${pageName}"]`);
-            if (activeLink) {
-                activeLink.classList.add('active');
-            }
-            
-            // Cacher toutes les pages
-            document.querySelectorAll('.main-content').forEach(page => {
-                page.classList.remove('active');
-            });
-            
-            // Afficher la page correspondante
-            document.getElementById('page-' + pageName).classList.add('active');
-        }
-
-        // Gestion du chat
-        function handleKeyPress(event) {
-            if (event.key === 'Enter') {
-                sendMessage();
-            }
-        }
-
-        async function sendMessage() {
-            const input = document.getElementById('chatInput');
-            const message = input.value.trim();
-
-            if (!message) return;
-
-            // Afficher le message de l'utilisateur
-            addMessage(message, 'user');
-
-            // Vider l'input
-            input.value = '';
-
-            // Désactiver le bouton d'envoi
-            const sendBtn = document.getElementById('sendBtn');
-            sendBtn.disabled = true;
-
-            // Afficher l'indicateur de frappe
-            document.getElementById('typingIndicator').classList.add('active');
-
+        // ============================================
+        // ENVOI WEBHOOK
+        // ============================================
+        async function sendToWebhook(url, data) {
             try {
-                // Préparer le payload
-                const payload = {
-                    ...userProfile,
-                    course_request: message
-                };
-
-                // Envoyer au webhook
-                const response = await fetch(WEBHOOK_URL, {
+                const response = await fetch(url, {
                     method: 'POST',
+                    mode: 'cors',
                     headers: {
-                        'Content-Type': 'application/json'
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
                     },
-                    body: JSON.stringify(payload)
+                    body: JSON.stringify(data)
                 });
 
                 if (!response.ok) {
-                    throw new Error('Erreur de connexion');
+                    throw new Error('Erreur HTTP: ' + response.status);
                 }
 
-                const result = await response.text();
-
-                // Cacher l'indicateur de frappe
-                document.getElementById('typingIndicator').classList.remove('active');
-
-                // Afficher la réponse du Prof IA
-                addMessage(result, 'assistant');
+                const text = await response.text();
+                try {
+                    return JSON.parse(text);
+                } catch (e) {
+                    return { success: true, message: text };
+                }
 
             } catch (error) {
-                // Cacher l'indicateur de frappe
-                document.getElementById('typingIndicator').classList.remove('active');
-
-                addMessage('Désolé, une erreur s\'est produite. Peux-tu réessayer ?', 'assistant');
-            } finally {
-                // Réactiver le bouton d'envoi
-                sendBtn.disabled = false;
+                // Fallback no-cors
+                if (error.message.includes('CORS') || error.message.includes('Failed to fetch')) {
+                    try {
+                        await fetch(url, {
+                            method: 'POST',
+                            mode: 'no-cors',
+                            headers: { 'Content-Type': 'text/plain' },
+                            body: JSON.stringify(data)
+                        });
+                        return { success: true, no_cors: true };
+                    } catch (e2) {
+                        throw new Error('Impossible de contacter le serveur');
+                    }
+                }
+                throw error;
             }
         }
 
-        function addMessage(text, sender) {
-            const messagesContainer = document.getElementById('chatMessages');
-            
-            const messageDiv = document.createElement('div');
-            messageDiv.className = `message ${sender}`;
-            
-            const avatar = document.createElement('div');
-            avatar.className = 'message-avatar';
-            avatar.textContent = sender === 'user' ? '👤' : '🤖';
-            
-            const content = document.createElement('div');
-            content.className = 'message-content';
-            
-            const messageText = document.createElement('div');
-            messageText.className = 'message-text';
-            messageText.textContent = text;
-            
-            const messageTime = document.createElement('div');
-            messageTime.className = 'message-time';
-            messageTime.textContent = getCurrentTime();
-            
-            content.appendChild(messageText);
-            content.appendChild(messageTime);
-            
-            messageDiv.appendChild(avatar);
-            messageDiv.appendChild(content);
-            
-            messagesContainer.appendChild(messageDiv);
-            
-            // Scroller vers le bas
-            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        // ============================================
+        // SAUVEGARDE LOCALSTORAGE
+        // ============================================
+        function saveUserData(userId, name, profile, schoolLevel, filiere, level) {
+            localStorage.setItem('kelassi_user_id', userId);
+            localStorage.setItem('kelassi_user_name', name);
+            localStorage.setItem('kelassi_user_profile', profile);
+
+            const profileData = {
+                user_id: userId,
+                profile: profile,
+                school_level: schoolLevel || '',
+                filiere: filiere || '',
+                level: level || ''
+            };
+            localStorage.setItem('kelassiProfile', JSON.stringify(profileData));
         }
 
-        function getCurrentTime() {
-            const now = new Date();
-            return now.getHours().toString().padStart(2, '0') + ':' + 
-                   now.getMinutes().toString().padStart(2, '0');
+        // ============================================
+        // REDIRECTION
+        // ============================================
+        function redirectToApp() {
+            window.location.href = CONFIG.REDIRECT_URL;
+        }
+
+        // ============================================
+        // INSCRIPTION
+        // ============================================
+        document.getElementById('inscriptionForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            const name = document.getElementById('inscriptionName').value.trim();
+            const phone = document.getElementById('inscriptionPhone').value.trim();
+            const profile = document.querySelector('input[name="inscriptionProfile"]:checked');
+
+            if (!name) {
+                showError('Merci d\'entrer ton prénom');
+                return;
+            }
+
+            if (!phone) {
+                showError('Merci d\'entrer ton numéro de téléphone');
+                return;
+            }
+
+            if (!profile) {
+                showError('Merci de sélectionner ton profil');
+                return;
+            }
+
+            let schoolLevel = '';
+            let filiere = '';
+            let level = '';
+
+            if (profile.value === 'eleve') {
+                schoolLevel = document.getElementById('schoolLevel').value;
+                if (!schoolLevel) {
+                    showError('Merci de sélectionner ton niveau scolaire');
+                    return;
+                }
+                filiere = document.getElementById('filiere').value.trim();
+            } else {
+                level = document.getElementById('level').value;
+                if (!level) {
+                    showError('Merci de sélectionner ton niveau d\'expérience');
+                    return;
+                }
+            }
+
+            const data = {
+                action: 'inscription',
+                name: name,
+                phone: phone,
+                profile: profile.value,
+                school_level: schoolLevel || null,
+                filiere: filiere || null,
+                level: level || null,
+                timestamp: new Date().toISOString()
+            };
+
+            showLoading('Création de ton compte...');
+
+            try {
+                const result = await sendToWebhook(CONFIG.WEBHOOK_INSCRIPTION, data);
+
+                if (result.success || result.no_cors) {
+                    const userId = result.user_id || 'user_' + Date.now();
+                    saveUserData(userId, name, profile.value, schoolLevel, filiere, level);
+                    showSuccess('Compte créé ! Redirection...');
+                    setTimeout(redirectToApp, 1500);
+                } else {
+                    showError(result.message || 'Ce compte existe déjà. Utilise la connexion.');
+                }
+
+            } catch (error) {
+                showError('Erreur: ' + error.message);
+            } finally {
+                hideLoading();
+            }
+        });
+
+        // ============================================
+        // CONNEXION
+        // ============================================
+        document.getElementById('connexionForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            const name = document.getElementById('connexionName').value.trim();
+            const phone = document.getElementById('connexionPhone').value.trim();
+
+            if (!name) {
+                showError('Merci d\'entrer ton prénom');
+                return;
+            }
+
+            if (!phone) {
+                showError('Merci d\'entrer ton numéro de téléphone');
+                return;
+            }
+
+            const data = {
+                action: 'connexion',
+                name: name,
+                phone: phone,
+                timestamp: new Date().toISOString()
+            };
+
+            showLoading('Connexion en cours...');
+
+            try {
+                const result = await sendToWebhook(CONFIG.WEBHOOK_CONNEXION, data);
+
+                if (result.success || result.no_cors) {
+                    const userId = result.user_id || 'user_' + Date.now();
+                    saveUserData(
+                        userId,
+                        result.name || name,
+                        result.profile || 'eleve',
+                        result.school_level || '',
+                        result.filiere || '',
+                        result.level || ''
+                    );
+                    showSuccess('Connecté ! Redirection...');
+                    setTimeout(redirectToApp, 1500);
+                } else {
+                    showError(result.message || 'Compte introuvable. Vérifie tes infos ou crée un compte.');
+                }
+
+            } catch (error) {
+                showError('Erreur: ' + error.message);
+            } finally {
+                hideLoading();
+            }
+        });
+
+        // ============================================
+        // AFFICHAGE
+        // ============================================
+        function showLoading(text) {
+            document.getElementById('loadingText').textContent = text;
+            document.getElementById('loading').classList.add('active');
+            document.getElementById('inscriptionBtn').disabled = true;
+            document.getElementById('connexionBtn').disabled = true;
+        }
+
+        function hideLoading() {
+            document.getElementById('loading').classList.remove('active');
+            document.getElementById('inscriptionBtn').disabled = false;
+            document.getElementById('connexionBtn').disabled = false;
+        }
+
+        function showError(message) {
+            document.getElementById('errorMessage').textContent = message;
+            document.getElementById('errorMessage').classList.add('active');
+            document.getElementById('successMessage').classList.remove('active');
+        }
+
+        function showSuccess(message) {
+            document.getElementById('successMessage').textContent = message;
+            document.getElementById('successMessage').classList.add('active');
+            document.getElementById('errorMessage').classList.remove('active');
+        }
+
+        function hideMessages() {
+            document.getElementById('errorMessage').classList.remove('active');
+            document.getElementById('successMessage').classList.remove('active');
         }
     </script>
 </body>
 </html>
-
