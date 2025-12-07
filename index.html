@@ -1258,7 +1258,13 @@
                 setTimeout(() => {
                     const chatInput = document.getElementById('chatInput');
                     if (chatInput) chatInput.focus();
-                }, 100);
+
+                    const chatMessages = document.getElementById('chatMessages');
+                     if (chatMessages) {
+                          chatMessages.scrollTop = chatMessages.scrollHeight;
+                     }
+           
+                }, 300);
             }
         }
 
@@ -1633,6 +1639,7 @@
     </script>
 </body>
 </html>
+
 
 
 
