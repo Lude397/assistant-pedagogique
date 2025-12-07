@@ -1280,6 +1280,11 @@
                     history.forEach(msg => {
                         addMessage(msg.role, msg.content, false, msg.time);
                     });
+                    // Scroll vers le dernier message
+                    const chatMessages = document.getElementById('chatMessages');
+                    if (chatMessages) {
+                         chatMessages.scrollTop = chatMessages.scrollHeight;
+                    }
                 }
             }
             
@@ -1623,4 +1628,5 @@
     </script>
 </body>
 </html>
+
 
