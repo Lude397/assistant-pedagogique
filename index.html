@@ -1318,14 +1318,22 @@
         function addWelcomeMessage() {
             const chatMessages = document.getElementById('chatMessages');
             if (!chatMessages) return;
-            
-            const welcomeText = userProfile.name 
+
+            // Ne pas afficher si historique existe déjà
+            const userId = localStorage.getItem('kelassi_user_id');
+            if (userId) {
+                const savedHistory = localStorage.getItem('kelassi_chat_history_' + userId);
+                if (savedHistory && JSON.parse(savedHistory).length > 0) {
+                    return;
+                }
+            }
+
+            const welcomeText = userProfile.name
                 ? `Bonjour ${userProfile.name} ! Je suis ton professeur virtuel. Sur quel sujet veux-tu travailler aujourd'hui ?`
                 : `Bonjour ! Je suis ton professeur virtuel. Sur quel sujet veux-tu travailler aujourd'hui ?`;
-            
             addMessage('assistant', welcomeText);
         }
-
+            
         async function sendMessage() {
             const chatInput = document.getElementById('chatInput');
             const message = chatInput.value.trim();
@@ -1639,6 +1647,7 @@
     </script>
 </body>
 </html>
+
 
 
 
