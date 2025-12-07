@@ -1280,15 +1280,16 @@
                     history.forEach(msg => {
                         addMessage(msg.role, msg.content, false, msg.time);
                     });
-                    // Scroll vers le dernier message
-                    setTimeout(function() {
-                        const chatMessages = document.getElementById('chatMessages');
-                        if (chatMessages) {
-                            chatMessages.scrollTop = chatMessages.scrollHeight;
-                        }
-                    }, 100);
                 }
             }
+
+             // Scroll vers le dernier message
+             setTimeout(function() {
+                const chatMessages = document.getElementById('chatMessages');
+                if (chatMessages) {
+                    chatMessages.scrollTop = chatMessages.scrollHeight;
+                }
+             }, 300);
             
             btnSend.addEventListener('click', sendMessage);
             
@@ -1630,6 +1631,7 @@
     </script>
 </body>
 </html>
+
 
 
 
