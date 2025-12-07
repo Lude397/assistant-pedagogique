@@ -804,8 +804,7 @@
         @media (max-width: 768px) {
             .navbar {
                 padding: 15px 20px;
-                flex-wrap: wrap;
-                gap: 15px;
+                justify-content: space-between;
             }
 
             .hamburger {
@@ -839,6 +838,10 @@
 
             .btn-logout {
                 margin-top: 20px;
+                font-size: 18px;
+                padding: 15px 30px;
+                border: 2px solid #ef4444;
+                background: transparent;
             }
 
             .nav-link {
@@ -938,10 +941,11 @@
                 <span class="link-icon">👤</span>
                 <span>Profil</span>
             </a>
-        </div>
-        <button class="btn-logout" id="btnLogout">
+            <button class="btn-logout" id="btnLogout">
             <span>Déconnexion</span>
         </button>
+        </div>
+        
     </nav>
 
     <!-- Page Accueil -->
@@ -1602,6 +1606,7 @@
     </script>
 </body>
 </html>
+
 
 
 
