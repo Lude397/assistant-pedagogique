@@ -1268,6 +1268,17 @@
             const btnSend = document.getElementById('btnSend');
             
             if (!chatInput || !btnSend) return;
+           // Charger l'historique depuis localStorage (lié à l'utilisateur)
+            const userId = localStorage.getItem('kelassi_user_id');
+            if (userId) {
+                const savedHistory = localStorage.getItem('kelassi_chat_history_' + userId);
+                if (savedHistory) {
+                    const history = JSON.parse(savedHistory);
+                    history.forEach(msg => {
+                        addMessage(msg.role, msg.content, false);
+                    });
+                }
+            }
             
             btnSend.addEventListener('click', sendMessage);
             
@@ -1386,7 +1397,7 @@
             }
         }
 
-        function addMessage(role, content) {
+        function addMessage(role, content, saveToHistory = true) {
             const chatMessages = document.getElementById('chatMessages');
             if (!chatMessages) return;
             
@@ -1408,7 +1419,16 @@
             
             chatMessages.appendChild(messageDiv);
             chatMessages.scrollTop = chatMessages.scrollHeight;
-        }
+            // Sauvegarder dans localStorage (lié à l'utilisateur)
+            if (saveToHistory) {
+                const userId = localStorage.getItem('kelassi_user_id');
+                if (userId) {
+                    const historyKey = 'kelassi_chat_history_' + userId;
+                    const history = JSON.parse(localStorage.getItem(historyKey) || '[]');
+                    history.push({ role: role, content: content, time: new Date().toISOString() });
+                    localStorage.setItem(historyKey, JSON.stringify(history));
+                }
+            }
 
         function showTypingIndicator() {
             const chatMessages = document.getElementById('chatMessages');
@@ -1598,6 +1618,7 @@
     </script>
 </body>
 </html>
+
 
 
 
