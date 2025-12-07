@@ -1275,7 +1275,7 @@
                 if (savedHistory) {
                     const history = JSON.parse(savedHistory);
                     history.forEach(msg => {
-                        addMessage(msg.role, msg.content, false);
+                        addMessage(msg.role, msg.content, false, msg.time);
                     });
                 }
             }
@@ -1397,7 +1397,7 @@
             }
         }
 
-        function addMessage(role, content, saveToHistory = true) {
+        function addMessage(role, content, saveToHistory = true, savedTime = null) {
             const chatMessages = document.getElementById('chatMessages');
             if (!chatMessages) return;
             
@@ -1405,7 +1405,8 @@
             messageDiv.className = `message ${role}`;
             
             const avatar = role === 'user' ? '👤' : '🤖';
-            const time = new Date().toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+            const timeDate = savedTime ? new Date(savedTime) : new Date();
+            const time = timeDate.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
             
             const formattedContent = content.replace(/\n/g, '<br>');
             
@@ -1619,27 +1620,3 @@
     </script>
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
