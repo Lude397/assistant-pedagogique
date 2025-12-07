@@ -1283,14 +1283,16 @@
                 }
             }
 
-             // Scroll vers le dernier message
-             setTimeout(function() {
-                const chatMessages = document.getElementById('chatMessages');
-                if (chatMessages) {
-                    chatMessages.scrollTop = chatMessages.scrollHeight;
-                }
-             }, 300);
-            
+            // Scroll vers le dernier message dès qu'ils sont affichés
+            requestAnimationFrame(function() {
+                requestAnimationFrame(function() {
+                    const chatMessages = document.getElementById('chatMessages');
+                    if (chatMessages) {
+                        chatMessages.scrollTop = chatMessages.scrollHeight;
+                    }
+                });
+            });
+
             btnSend.addEventListener('click', sendMessage);
             
             chatInput.addEventListener('keypress', function(e) {
@@ -1631,6 +1633,7 @@
     </script>
 </body>
 </html>
+
 
 
 
