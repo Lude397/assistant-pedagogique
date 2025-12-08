@@ -591,8 +591,10 @@
                 if (result.success || result.no_cors) {
                     const userId = result.user_id || 'user_' + Date.now();
                     saveUserData(userId, name, profile.value, schoolLevel, filiere, level);
-                    showSuccess('Compte créé ! Redirection...');
-                    setTimeout(redirectToApp, 1500);
+                    showSuccess('Compte créé ! Connecte-toi maintenant.');
+                    setTimeout(function() {
+                        switchTab('connexion');
+                    }, 2000);
                 } else {
                     showError(result.message || 'Ce compte existe déjà. Utilise la connexion.');
                 }
