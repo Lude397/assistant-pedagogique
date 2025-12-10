@@ -525,6 +525,39 @@
         .toast-icon { width: 24px; height: 24px; }
         .toast.success .toast-icon { color: var(--success); }
         .toast.error .toast-icon { color: var(--danger); }
+
+         /* Modal Image Preview */
+        .image-preview-modal {
+            max-width: 90vw;
+            max-height: 90vh;
+            background: transparent;
+            border: none;
+            overflow: visible;
+         }
+        .image-preview-modal img {
+            max-width: 100%;
+            max-height: 85vh;
+            object-fit: contain;
+            border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+        }
+        .image-preview-close {
+            position: absolute;
+            top: -40px;
+            right: 0;
+            width: 36px;
+            height: 36px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 50%;
+            color: var(--text-primary);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+         }
+        .image-preview-close:hover { background: var(--accent); }
+        .article-image img { cursor: pointer; }
     </style>
 </head>
 <body>
@@ -715,6 +748,19 @@
         </div>
     </div>
 
+     <!-- MODAL APERCU IMAGE -->
+    <div class="modal-overlay" id="imagePreviewModal" onclick="closeImagePreview()">
+        <div class="modal image-preview-modal" onclick="event.stopPropagation()">
+            <button class="image-preview-close" onclick="closeImagePreview()">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+             </button>
+         <img id="previewImage" src="" alt="Aperçu">
+      </div>
+     </div>
+
     <!-- TOAST NOTIFICATION -->
     <div class="toast" id="toast">
         <svg class="toast-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -898,7 +944,7 @@
             articlesGrid.innerHTML = articlesToRender.map(article => 
                 '<div class="article-card" onclick="openModal(' + article.id + ')">' +
                     '<div class="article-image">' +
-                        '<img src="' + article.image_url + '" alt="' + article.nom + '" loading="lazy">' +
+                        '<img src="' + article.image_url + '" alt="' + article.nom + '" loading="lazy" onclick="previewImage(\'' + article.image_url + '\', event)">' +
                         '<span class="article-stock-badge ' + getStockClass(article) + '">' + getStockLabel(article) + '</span>' +
                     '</div>' +
                     '<div class="article-info">' +
@@ -1034,6 +1080,18 @@
                 timeout = setTimeout(() => func(...args), wait);
             };
         }
+
+        function previewImage(url, event) {
+            event.stopPropagation();
+            if (!url) return;
+            document.getElementById('previewImage').src = url;
+            document.getElementById('imagePreviewModal').classList.add('active');
+        }
+        
+        function closeImagePreview() {
+            document.getElementById('imagePreviewModal').classList.remove('active');
+        }
+        
     </script>
 </body>
 </html>
