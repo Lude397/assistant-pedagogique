@@ -1,0 +1,1458 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin - Gestion Inventaire</title>
+    
+    <!-- ============================================================
+         ADMIN INVENTAIRE - INTERFACE GESTIONNAIRE
+         ============================================================
+         
+         DESCRIPTION:
+         Interface d'administration pour gérer le stock, les articles,
+         les demandes et les mouvements d'inventaire.
+         
+         SECTIONS:
+         1. Dashboard - Vue d'ensemble et alertes
+         2. Articles - CRUD complet
+         3. Demandes - Validation/Refus
+         4. Mouvements - Entrées, retours, historique
+         
+         CONFIGURATION:
+         - Modifier API_BASE_URL avec ton URL n8n (ligne ~950)
+         ============================================================ -->
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Mono:wght@700&display=swap" rel="stylesheet">
+    
+    <style>
+        /* ============================================================
+           1. RESET ET VARIABLES
+           ============================================================ */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        :root {
+            --bg-primary: #0a0a0a;
+            --bg-secondary: #141414;
+            --bg-card: #1e1e1e;
+            --bg-card-hover: #282828;
+            --bg-input: #0f0f0f;
+            --text-primary: #ffffff;
+            --text-secondary: #a0a0a0;
+            --text-muted: #666666;
+            --accent: #ff6b35;
+            --accent-hover: #ff8555;
+            --success: #4ade80;
+            --success-bg: rgba(74, 222, 128, 0.1);
+            --warning: #fbbf24;
+            --warning-bg: rgba(251, 191, 36, 0.1);
+            --danger: #ef4444;
+            --danger-bg: rgba(239, 68, 68, 0.1);
+            --border: #2a2a2a;
+            --border-light: #3a3a3a;
+            --sidebar-width: 260px;
+        }
+
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            line-height: 1.6;
+        }
+
+        /* ============================================================
+           2. LAYOUT PRINCIPAL
+           ============================================================ */
+        .app-container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* ============================================================
+           3. SIDEBAR NAVIGATION
+           ============================================================ */
+        .sidebar {
+            width: var(--sidebar-width);
+            background: var(--bg-secondary);
+            border-right: 1px solid var(--border);
+            padding: 1.5rem;
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .sidebar-logo {
+            font-family: 'Space Mono', monospace;
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--accent);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 0.5rem;
+        }
+        .sidebar-logo span { color: var(--text-primary); }
+        .sidebar-subtitle {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 2rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .nav-section {
+            margin-bottom: 1.5rem;
+        }
+        .nav-section-title {
+            font-size: 0.7rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-muted);
+            margin-bottom: 0.75rem;
+            padding-left: 0.75rem;
+        }
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.85rem 1rem;
+            border-radius: 8px;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            margin-bottom: 0.25rem;
+        }
+        .nav-item:hover {
+            background: var(--bg-card);
+            color: var(--text-primary);
+        }
+        .nav-item.active {
+            background: var(--accent);
+            color: white;
+        }
+        .nav-item svg { flex-shrink: 0; }
+        .nav-badge {
+            margin-left: auto;
+            background: var(--danger);
+            color: white;
+            font-size: 0.7rem;
+            font-weight: 600;
+            padding: 0.2rem 0.5rem;
+            border-radius: 10px;
+        }
+
+        /* ============================================================
+           4. CONTENU PRINCIPAL
+           ============================================================ */
+        .main-content {
+            flex: 1;
+            margin-left: var(--sidebar-width);
+            padding: 2rem;
+        }
+
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+        .page-title {
+            font-size: 1.75rem;
+            font-weight: 700;
+        }
+        .page-subtitle {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            margin-top: 0.25rem;
+        }
+
+        /* ============================================================
+           5. BOUTONS
+           ============================================================ */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.25rem;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            font-family: inherit;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border: none;
+        }
+        .btn-primary {
+            background: var(--accent);
+            color: white;
+        }
+        .btn-primary:hover { background: var(--accent-hover); }
+        .btn-secondary {
+            background: var(--bg-card);
+            color: var(--text-primary);
+            border: 1px solid var(--border);
+        }
+        .btn-secondary:hover { background: var(--bg-card-hover); }
+        .btn-success {
+            background: var(--success);
+            color: #000;
+        }
+        .btn-success:hover { filter: brightness(1.1); }
+        .btn-danger {
+            background: var(--danger);
+            color: white;
+        }
+        .btn-danger:hover { filter: brightness(1.1); }
+        .btn-sm {
+            padding: 0.5rem 0.75rem;
+            font-size: 0.8rem;
+        }
+        .btn-icon {
+            padding: 0.5rem;
+            border-radius: 6px;
+        }
+
+        /* ============================================================
+           6. CARTES DASHBOARD
+           ============================================================ */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.25rem;
+            margin-bottom: 2rem;
+        }
+        .stat-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.5rem;
+        }
+        .stat-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 1rem;
+        }
+        .stat-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .stat-icon.orange { background: rgba(255, 107, 53, 0.15); color: var(--accent); }
+        .stat-icon.green { background: var(--success-bg); color: var(--success); }
+        .stat-icon.yellow { background: var(--warning-bg); color: var(--warning); }
+        .stat-icon.red { background: var(--danger-bg); color: var(--danger); }
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            line-height: 1;
+        }
+        .stat-label {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            margin-top: 0.25rem;
+        }
+
+        /* ============================================================
+           7. TABLEAUX
+           ============================================================ */
+        .table-container {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+        .table-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.25rem 1.5rem;
+            border-bottom: 1px solid var(--border);
+        }
+        .table-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th {
+            text-align: left;
+            padding: 1rem 1.5rem;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-muted);
+            background: var(--bg-secondary);
+            border-bottom: 1px solid var(--border);
+        }
+        td {
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid var(--border);
+            font-size: 0.9rem;
+        }
+        tr:last-child td { border-bottom: none; }
+        tr:hover td { background: var(--bg-card-hover); }
+        .table-img {
+            width: 48px;
+            height: 48px;
+            border-radius: 8px;
+            object-fit: cover;
+        }
+        .table-empty {
+            text-align: center;
+            padding: 3rem;
+            color: var(--text-muted);
+        }
+
+        /* ============================================================
+           8. BADGES
+           ============================================================ */
+        .badge {
+            display: inline-block;
+            padding: 0.35rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+        .badge-success { background: var(--success-bg); color: var(--success); }
+        .badge-warning { background: var(--warning-bg); color: var(--warning); }
+        .badge-danger { background: var(--danger-bg); color: var(--danger); }
+        .badge-pending { background: rgba(99, 102, 241, 0.15); color: #818cf8; }
+
+        /* ============================================================
+           9. FORMULAIRES
+           ============================================================ */
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1.25rem;
+        }
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+        .form-group.full-width { grid-column: span 2; }
+        .form-label {
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--text-secondary);
+        }
+        .form-input, .form-select, .form-textarea {
+            padding: 0.85rem 1rem;
+            background: var(--bg-input);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--text-primary);
+            font-size: 0.95rem;
+            font-family: inherit;
+            transition: all 0.2s ease;
+        }
+        .form-input:focus, .form-select:focus, .form-textarea:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
+        .form-select {
+            cursor: pointer;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23666666' stroke-width='2'%3E%3Cpolyline points='6,9 12,15 18,9'%3E%3C/polyline%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 1rem center;
+        }
+        .form-textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        /* ============================================================
+           10. MODAL
+           ============================================================ */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+        .modal-overlay.active { opacity: 1; visibility: visible; }
+        .modal {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            width: 100%;
+            max-width: 600px;
+            max-height: 90vh;
+            overflow-y: auto;
+            transform: scale(0.95);
+            transition: transform 0.3s ease;
+        }
+        .modal-overlay.active .modal { transform: scale(1); }
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--border);
+        }
+        .modal-title { font-size: 1.25rem; font-weight: 700; }
+        .modal-close {
+            width: 36px;
+            height: 36px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--text-secondary);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .modal-close:hover { background: var(--bg-card-hover); color: var(--text-primary); }
+        .modal-body { padding: 1.5rem; }
+        .modal-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 0.75rem;
+            padding: 1.5rem;
+            border-top: 1px solid var(--border);
+        }
+
+        /* ============================================================
+           11. SECTIONS PAGE
+           ============================================================ */
+        .section { display: none; }
+        .section.active { display: block; }
+
+        /* ============================================================
+           12. ALERTES STOCK BAS
+           ============================================================ */
+        .alert-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+        .alert-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            border-left: 3px solid var(--warning);
+        }
+        .alert-item.critical { border-left-color: var(--danger); }
+        .alert-item-img {
+            width: 50px;
+            height: 50px;
+            border-radius: 8px;
+            object-fit: cover;
+        }
+        .alert-item-info { flex: 1; }
+        .alert-item-name { font-weight: 600; margin-bottom: 0.25rem; }
+        .alert-item-stock { font-size: 0.85rem; color: var(--text-secondary); }
+
+        /* ============================================================
+           13. ACTIONS GROUPE
+           ============================================================ */
+        .action-buttons {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        /* ============================================================
+           14. RECHERCHE
+           ============================================================ */
+        .search-box {
+            position: relative;
+            width: 300px;
+        }
+        .search-input {
+            width: 100%;
+            padding: 0.65rem 1rem 0.65rem 2.5rem;
+            background: var(--bg-input);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--text-primary);
+            font-size: 0.9rem;
+            font-family: inherit;
+        }
+        .search-input:focus { outline: none; border-color: var(--accent); }
+        .search-icon {
+            position: absolute;
+            left: 0.85rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+        }
+
+        /* ============================================================
+           15. TOAST NOTIFICATION
+           ============================================================ */
+        .toast {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            padding: 1rem 1.5rem;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            transform: translateY(100px);
+            opacity: 0;
+            transition: all 0.3s ease;
+            z-index: 1100;
+        }
+        .toast.active { transform: translateY(0); opacity: 1; }
+        .toast.success { border-color: var(--success); }
+        .toast.error { border-color: var(--danger); }
+        .toast-icon { width: 24px; height: 24px; }
+        .toast.success .toast-icon { color: var(--success); }
+        .toast.error .toast-icon { color: var(--danger); }
+
+        /* ============================================================
+           16. RESPONSIVE
+           ============================================================ */
+        @media (max-width: 1024px) {
+            .sidebar { width: 220px; }
+            .main-content { margin-left: 220px; }
+            :root { --sidebar-width: 220px; }
+        }
+        @media (max-width: 768px) {
+            .sidebar {
+                position: fixed;
+                left: -280px;
+                z-index: 100;
+                transition: left 0.3s ease;
+            }
+            .sidebar.open { left: 0; }
+            .main-content { margin-left: 0; }
+            .form-grid { grid-template-columns: 1fr; }
+            .form-group.full-width { grid-column: span 1; }
+            .stats-grid { grid-template-columns: repeat(2, 1fr); }
+            .mobile-menu-btn { display: flex !important; }
+        }
+        .mobile-menu-btn {
+            display: none;
+            position: fixed;
+            top: 1rem;
+            left: 1rem;
+            z-index: 99;
+            width: 44px;
+            height: 44px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            color: var(--text-primary);
+        }
+
+        /* ============================================================
+           17. DEMANDE DETAIL
+           ============================================================ */
+        .demande-detail {
+            background: var(--bg-card);
+            border-radius: 10px;
+            padding: 1.25rem;
+            margin-bottom: 1rem;
+        }
+        .demande-detail-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid var(--border);
+        }
+        .demande-detail-row:last-child { border-bottom: none; }
+        .demande-detail-label { color: var(--text-muted); font-size: 0.85rem; }
+        .demande-detail-value { font-weight: 600; }
+    </style>
+</head>
+<body>
+    <!-- ============================================================
+         BOUTON MENU MOBILE
+         ============================================================ -->
+    <button class="mobile-menu-btn" id="mobileMenuBtn">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="3" y1="6" x2="21" y2="6"></line>
+            <line x1="3" y1="12" x2="21" y2="12"></line>
+            <line x1="3" y1="18" x2="21" y2="18"></line>
+        </svg>
+    </button>
+
+    <div class="app-container">
+        <!-- ============================================================
+             SIDEBAR NAVIGATION
+             ============================================================ -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-logo">Stock<span>Pro</span></div>
+            <div class="sidebar-subtitle">Administration</div>
+
+            <nav>
+                <div class="nav-section">
+                    <div class="nav-section-title">Principal</div>
+                    <div class="nav-item active" data-section="dashboard">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="3" y="3" width="7" height="7"></rect>
+                            <rect x="14" y="3" width="7" height="7"></rect>
+                            <rect x="14" y="14" width="7" height="7"></rect>
+                            <rect x="3" y="14" width="7" height="7"></rect>
+                        </svg>
+                        Dashboard
+                    </div>
+                    <div class="nav-item" data-section="articles">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+                        </svg>
+                        Articles
+                    </div>
+                </div>
+
+                <div class="nav-section">
+                    <div class="nav-section-title">Opérations</div>
+                    <div class="nav-item" data-section="demandes">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                            <polyline points="14 2 14 8 20 8"></polyline>
+                            <line x1="16" y1="13" x2="8" y2="13"></line>
+                            <line x1="16" y1="17" x2="8" y2="17"></line>
+                        </svg>
+                        Demandes
+                        <span class="nav-badge" id="demandesBadge" style="display: none;">0</span>
+                    </div>
+                    <div class="nav-item" data-section="mouvements">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline>
+                            <polyline points="17 6 23 6 23 12"></polyline>
+                        </svg>
+                        Mouvements
+                    </div>
+                </div>
+            </nav>
+        </aside>
+
+        <!-- ============================================================
+             CONTENU PRINCIPAL
+             ============================================================ -->
+        <main class="main-content">
+            
+            <!-- ========================================
+                 SECTION DASHBOARD
+                 ======================================== -->
+            <section class="section active" id="section-dashboard">
+                <div class="page-header">
+                    <div>
+                        <h1 class="page-title">Dashboard</h1>
+                        <p class="page-subtitle">Vue d'ensemble de votre inventaire</p>
+                    </div>
+                </div>
+
+                <!-- Stats -->
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-card-header">
+                            <div class="stat-icon orange">
+                                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+                                </svg>
+                            </div>
+                        </div>
+                        <div class="stat-value" id="statTotalArticles">0</div>
+                        <div class="stat-label">Articles total</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-card-header">
+                            <div class="stat-icon green">
+                                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <polyline points="20 6 9 17 4 12"></polyline>
+                                </svg>
+                            </div>
+                        </div>
+                        <div class="stat-value" id="statTotalStock">0</div>
+                        <div class="stat-label">Unités en stock</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-card-header">
+                            <div class="stat-icon yellow">
+                                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+                                    <line x1="12" y1="9" x2="12" y2="13"></line>
+                                    <line x1="12" y1="17" x2="12.01" y2="17"></line>
+                                </svg>
+                            </div>
+                        </div>
+                        <div class="stat-value" id="statStockBas">0</div>
+                        <div class="stat-label">Stock bas</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-card-header">
+                            <div class="stat-icon red">
+                                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <circle cx="12" cy="12" r="10"></circle>
+                                    <line x1="12" y1="8" x2="12" y2="12"></line>
+                                    <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                                </svg>
+                            </div>
+                        </div>
+                        <div class="stat-value" id="statDemandesEnAttente">0</div>
+                        <div class="stat-label">Demandes en attente</div>
+                    </div>
+                </div>
+
+                <!-- Alertes stock bas -->
+                <div class="table-container">
+                    <div class="table-header">
+                        <h3 class="table-title">⚠️ Alertes Stock Bas</h3>
+                    </div>
+                    <div style="padding: 1.5rem;">
+                        <div class="alert-list" id="alertList">
+                            <p class="table-empty">Aucune alerte</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ========================================
+                 SECTION ARTICLES
+                 ======================================== -->
+            <section class="section" id="section-articles">
+                <div class="page-header">
+                    <div>
+                        <h1 class="page-title">Articles</h1>
+                        <p class="page-subtitle">Gérez votre catalogue d'articles</p>
+                    </div>
+                    <button class="btn btn-primary" onclick="openArticleModal()">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <line x1="12" y1="5" x2="12" y2="19"></line>
+                            <line x1="5" y1="12" x2="19" y2="12"></line>
+                        </svg>
+                        Ajouter un article
+                    </button>
+                </div>
+
+                <div class="table-container">
+                    <div class="table-header">
+                        <h3 class="table-title">Liste des articles</h3>
+                        <div class="search-box">
+                            <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="11" cy="11" r="8"></circle>
+                                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                            </svg>
+                            <input type="text" class="search-input" id="searchArticles" placeholder="Rechercher...">
+                        </div>
+                    </div>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Image</th>
+                                <th>Nom</th>
+                                <th>Catégorie</th>
+                                <th>Emplacement</th>
+                                <th>Stock</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="articlesTableBody">
+                            <tr><td colspan="6" class="table-empty">Chargement...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- ========================================
+                 SECTION DEMANDES
+                 ======================================== -->
+            <section class="section" id="section-demandes">
+                <div class="page-header">
+                    <div>
+                        <h1 class="page-title">Demandes</h1>
+                        <p class="page-subtitle">Validez ou refusez les demandes de sortie</p>
+                    </div>
+                </div>
+
+                <div class="table-container">
+                    <div class="table-header">
+                        <h3 class="table-title">Demandes en attente</h3>
+                    </div>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Demandeur</th>
+                                <th>Article</th>
+                                <th>Quantité</th>
+                                <th>Statut</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="demandesTableBody">
+                            <tr><td colspan="6" class="table-empty">Aucune demande en attente</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- ========================================
+                 SECTION MOUVEMENTS
+                 ======================================== -->
+            <section class="section" id="section-mouvements">
+                <div class="page-header">
+                    <div>
+                        <h1 class="page-title">Mouvements</h1>
+                        <p class="page-subtitle">Entrées, retours et historique</p>
+                    </div>
+                    <div class="action-buttons">
+                        <button class="btn btn-success" onclick="openMouvementModal('entree')">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <line x1="12" y1="5" x2="12" y2="19"></line>
+                                <line x1="5" y1="12" x2="19" y2="12"></line>
+                            </svg>
+                            Entrée stock
+                        </button>
+                        <button class="btn btn-secondary" onclick="openMouvementModal('retour')">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="1 4 1 10 7 10"></polyline>
+                                <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path>
+                            </svg>
+                            Enregistrer retour
+                        </button>
+                    </div>
+                </div>
+
+                <div class="table-container">
+                    <div class="table-header">
+                        <h3 class="table-title">Historique des mouvements</h3>
+                    </div>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Type</th>
+                                <th>Article</th>
+                                <th>Quantité</th>
+                                <th>Par</th>
+                                <th>Commentaire</th>
+                            </tr>
+                        </thead>
+                        <tbody id="mouvementsTableBody">
+                            <tr><td colspan="6" class="table-empty">Aucun mouvement</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- ============================================================
+         MODAL ARTICLE
+         ============================================================ -->
+    <div class="modal-overlay" id="articleModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 class="modal-title" id="articleModalTitle">Ajouter un article</h3>
+                <button class="modal-close" onclick="closeModal('articleModal')">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="articleForm" class="form-grid">
+                    <input type="hidden" id="articleId">
+                    <div class="form-group full-width">
+                        <label class="form-label">Nom de l'article</label>
+                        <input type="text" class="form-input" id="articleNom" required placeholder="Ex: Costume noir classique">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Catégorie</label>
+                        <input type="text" class="form-input" id="articleCategorie" required placeholder="Ex: Costumes">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Sous-catégorie</label>
+                        <input type="text" class="form-input" id="articleSousCategorie" placeholder="Ex: Classiques">
+                    </div>
+                    <div class="form-group full-width">
+                        <label class="form-label">Emplacement</label>
+                        <input type="text" class="form-input" id="articleEmplacement" required placeholder="Ex: Malle 1 - Dépôt A">
+                    </div>
+                    <div class="form-group full-width">
+                        <label class="form-label">URL de l'image</label>
+                        <input type="url" class="form-input" id="articleImageUrl" placeholder="https://...">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Quantité en stock</label>
+                        <input type="number" class="form-input" id="articleQuantite" min="0" value="0" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Seuil d'alerte</label>
+                        <input type="number" class="form-input" id="articleSeuil" min="0" placeholder="Ex: 2">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal('articleModal')">Annuler</button>
+                <button class="btn btn-primary" onclick="saveArticle()">Enregistrer</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============================================================
+         MODAL MOUVEMENT
+         ============================================================ -->
+    <div class="modal-overlay" id="mouvementModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 class="modal-title" id="mouvementModalTitle">Entrée de stock</h3>
+                <button class="modal-close" onclick="closeModal('mouvementModal')">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="mouvementForm" class="form-grid">
+                    <input type="hidden" id="mouvementType">
+                    <div class="form-group full-width">
+                        <label class="form-label">Article</label>
+                        <select class="form-select" id="mouvementArticle" required>
+                            <option value="">Sélectionner un article</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Quantité</label>
+                        <input type="number" class="form-input" id="mouvementQuantite" min="1" value="1" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Effectué par</label>
+                        <input type="text" class="form-input" id="mouvementPar" required placeholder="Votre nom">
+                    </div>
+                    <div class="form-group full-width">
+                        <label class="form-label">Commentaire (optionnel)</label>
+                        <textarea class="form-textarea" id="mouvementCommentaire" placeholder="Notes..."></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal('mouvementModal')">Annuler</button>
+                <button class="btn btn-primary" id="mouvementSubmitBtn" onclick="saveMouvement()">Enregistrer</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============================================================
+         MODAL DEMANDE DETAIL
+         ============================================================ -->
+    <div class="modal-overlay" id="demandeModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 class="modal-title">Détail de la demande</h3>
+                <button class="modal-close" onclick="closeModal('demandeModal')">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="demande-detail" id="demandeDetail"></div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-danger" onclick="traiterDemande('refuser')">Refuser</button>
+                <button class="btn btn-success" onclick="traiterDemande('valider')">Valider</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- TOAST -->
+    <div class="toast" id="toast">
+        <svg class="toast-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+            <polyline points="22 4 12 14.01 9 11.01"></polyline>
+        </svg>
+        <span id="toastMessage"></span>
+    </div>
+
+    <!-- ============================================================
+         JAVASCRIPT
+         ============================================================ -->
+    <script>
+        /* ============================================================
+           CONFIGURATION API
+           Modifier cette URL avec ton webhook n8n
+           ============================================================ */
+        const API_BASE_URL = 'https://n8n.srv1090700.hstgr.cloud/webhook';
+
+        /* ============================================================
+           ETAT DE L'APPLICATION
+           ============================================================ */
+        let articles = [];
+        let demandes = [];
+        let mouvements = [];
+        let currentDemande = null;
+
+        /* ============================================================
+           INITIALISATION
+           ============================================================ */
+        document.addEventListener('DOMContentLoaded', () => {
+            setupNavigation();
+            setupMobileMenu();
+            setupSearch();
+            loadDashboard();
+        });
+
+        /* ============================================================
+           NAVIGATION
+           ============================================================ */
+        function setupNavigation() {
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.addEventListener('click', () => {
+                    const section = item.dataset.section;
+                    
+                    // Update nav
+                    document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+                    item.classList.add('active');
+                    
+                    // Update sections
+                    document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+                    document.getElementById('section-' + section).classList.add('active');
+                    
+                    // Load data
+                    if (section === 'dashboard') loadDashboard();
+                    if (section === 'articles') loadArticles();
+                    if (section === 'demandes') loadDemandes();
+                    if (section === 'mouvements') loadMouvements();
+                    
+                    // Close mobile menu
+                    document.getElementById('sidebar').classList.remove('open');
+                });
+            });
+        }
+
+        function setupMobileMenu() {
+            document.getElementById('mobileMenuBtn').addEventListener('click', () => {
+                document.getElementById('sidebar').classList.toggle('open');
+            });
+        }
+
+        function setupSearch() {
+            document.getElementById('searchArticles').addEventListener('input', (e) => {
+                const search = e.target.value.toLowerCase();
+                const filtered = articles.filter(a => 
+                    a.nom.toLowerCase().includes(search) ||
+                    a.categorie.toLowerCase().includes(search) ||
+                    a.emplacement.toLowerCase().includes(search)
+                );
+                renderArticlesTable(filtered);
+            });
+        }
+
+        /* ============================================================
+           DASHBOARD
+           ============================================================ */
+        async function loadDashboard() {
+            try {
+                // Charger articles
+                const articlesRes = await fetch(API_BASE_URL + '/catalogue?action=articles');
+                articles = await articlesRes.json();
+                
+                // Charger demandes
+                const demandesRes = await fetch(API_BASE_URL + '/admin', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ action: 'demandes' })
+                });
+                demandes = await demandesRes.json();
+                
+                // Stats
+                document.getElementById('statTotalArticles').textContent = articles.length;
+                document.getElementById('statTotalStock').textContent = articles.reduce((sum, a) => sum + (a.quantite_stock || 0), 0);
+                
+                const stockBas = articles.filter(a => a.seuil_alerte && a.quantite_stock <= a.seuil_alerte);
+                document.getElementById('statStockBas').textContent = stockBas.length;
+                
+                const demandesEnAttente = Array.isArray(demandes) ? demandes.filter(d => d.statut === 'en_attente').length : 0;
+                document.getElementById('statDemandesEnAttente').textContent = demandesEnAttente;
+                
+                // Badge
+                const badge = document.getElementById('demandesBadge');
+                if (demandesEnAttente > 0) {
+                    badge.textContent = demandesEnAttente;
+                    badge.style.display = 'block';
+                } else {
+                    badge.style.display = 'none';
+                }
+                
+                // Alertes
+                renderAlerts(stockBas);
+            } catch (error) {
+                console.error('Erreur dashboard:', error);
+                showToast('Erreur de chargement', 'error');
+            }
+        }
+
+        function renderAlerts(stockBas) {
+            const container = document.getElementById('alertList');
+            if (stockBas.length === 0) {
+                container.innerHTML = '<p class="table-empty">Aucune alerte - Tous les stocks sont OK 👍</p>';
+                return;
+            }
+            container.innerHTML = stockBas.map(a => `
+                <div class="alert-item ${a.quantite_stock === 0 ? 'critical' : ''}">
+                    <img src="${a.image_url || 'https://via.placeholder.com/50'}" class="alert-item-img" alt="">
+                    <div class="alert-item-info">
+                        <div class="alert-item-name">${a.nom}</div>
+                        <div class="alert-item-stock">Stock: ${a.quantite_stock} / Seuil: ${a.seuil_alerte} • ${a.emplacement}</div>
+                    </div>
+                    <span class="badge ${a.quantite_stock === 0 ? 'badge-danger' : 'badge-warning'}">
+                        ${a.quantite_stock === 0 ? 'Rupture' : 'Stock bas'}
+                    </span>
+                </div>
+            `).join('');
+        }
+
+        /* ============================================================
+           ARTICLES
+           ============================================================ */
+        async function loadArticles() {
+            try {
+                const response = await fetch(API_BASE_URL + '/catalogue?action=articles');
+                articles = await response.json();
+                renderArticlesTable(articles);
+            } catch (error) {
+                console.error('Erreur:', error);
+                showToast('Erreur de chargement', 'error');
+            }
+        }
+
+        function renderArticlesTable(data) {
+            const tbody = document.getElementById('articlesTableBody');
+            if (!data || data.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" class="table-empty">Aucun article</td></tr>';
+                return;
+            }
+            tbody.innerHTML = data.map(a => `
+                <tr>
+                    <td><img src="${a.image_url || 'https://via.placeholder.com/48'}" class="table-img" alt=""></td>
+                    <td><strong>${a.nom}</strong></td>
+                    <td>${a.categorie}${a.sous_categorie ? ' / ' + a.sous_categorie : ''}</td>
+                    <td>${a.emplacement}</td>
+                    <td>
+                        <span class="badge ${getStockBadgeClass(a)}">${a.quantite_stock} unités</span>
+                    </td>
+                    <td>
+                        <div class="action-buttons">
+                            <button class="btn btn-secondary btn-sm" onclick="editArticle('${a.id}')">Modifier</button>
+                            <button class="btn btn-danger btn-sm" onclick="deleteArticle('${a.id}')">Supprimer</button>
+                        </div>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function getStockBadgeClass(article) {
+            if (article.quantite_stock === 0) return 'badge-danger';
+            if (article.seuil_alerte && article.quantite_stock <= article.seuil_alerte) return 'badge-warning';
+            return 'badge-success';
+        }
+
+        function openArticleModal(article = null) {
+            document.getElementById('articleModalTitle').textContent = article ? 'Modifier l\'article' : 'Ajouter un article';
+            document.getElementById('articleId').value = article ? article.id : '';
+            document.getElementById('articleNom').value = article ? article.nom : '';
+            document.getElementById('articleCategorie').value = article ? article.categorie : '';
+            document.getElementById('articleSousCategorie').value = article ? article.sous_categorie || '' : '';
+            document.getElementById('articleEmplacement').value = article ? article.emplacement : '';
+            document.getElementById('articleImageUrl').value = article ? article.image_url || '' : '';
+            document.getElementById('articleQuantite').value = article ? article.quantite_stock : 0;
+            document.getElementById('articleSeuil').value = article ? article.seuil_alerte || '' : '';
+            openModal('articleModal');
+        }
+
+        function editArticle(id) {
+            const article = articles.find(a => a.id === id);
+            if (article) openArticleModal(article);
+        }
+
+        async function saveArticle() {
+            const id = document.getElementById('articleId').value;
+            const data = {
+                action: id ? 'modifier' : 'ajouter',
+                id: id || undefined,
+                nom: document.getElementById('articleNom').value,
+                categorie: document.getElementById('articleCategorie').value,
+                sous_categorie: document.getElementById('articleSousCategorie').value || null,
+                emplacement: document.getElementById('articleEmplacement').value,
+                image_url: document.getElementById('articleImageUrl').value || null,
+                quantite_stock: parseInt(document.getElementById('articleQuantite').value) || 0,
+                seuil_alerte: parseInt(document.getElementById('articleSeuil').value) || null
+            };
+
+            try {
+                await fetch(API_BASE_URL + '/admin', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+                closeModal('articleModal');
+                showToast(id ? 'Article modifié' : 'Article ajouté', 'success');
+                loadArticles();
+            } catch (error) {
+                showToast('Erreur', 'error');
+            }
+        }
+
+        async function deleteArticle(id) {
+            if (!confirm('Supprimer cet article ?')) return;
+            try {
+                await fetch(API_BASE_URL + '/admin', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ action: 'supprimer', id })
+                });
+                showToast('Article supprimé', 'success');
+                loadArticles();
+            } catch (error) {
+                showToast('Erreur', 'error');
+            }
+        }
+
+        /* ============================================================
+           DEMANDES
+           ============================================================ */
+        async function loadDemandes() {
+            try {
+                const response = await fetch(API_BASE_URL + '/admin', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ action: 'demandes' })
+                });
+                demandes = await response.json();
+                renderDemandesTable();
+            } catch (error) {
+                console.error('Erreur:', error);
+            }
+        }
+
+        function renderDemandesTable() {
+            const tbody = document.getElementById('demandesTableBody');
+            const enAttente = Array.isArray(demandes) ? demandes.filter(d => d.statut === 'en_attente') : [];
+            
+            if (enAttente.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" class="table-empty">Aucune demande en attente</td></tr>';
+                return;
+            }
+            
+            tbody.innerHTML = enAttente.map(d => {
+                const article = articles.find(a => a.id === d.article_id);
+                return `
+                    <tr>
+                        <td>${new Date(d.date_demande).toLocaleDateString('fr-FR')}</td>
+                        <td><strong>${d.demandeur}</strong></td>
+                        <td>${article ? article.nom : d.article_id}</td>
+                        <td>${d.quantite}</td>
+                        <td><span class="badge badge-pending">En attente</span></td>
+                        <td>
+                            <div class="action-buttons">
+                                <button class="btn btn-success btn-sm" onclick="quickValidate('${d.id}', '${d.article_id}', ${d.quantite}, '${d.demandeur}')">✓</button>
+                                <button class="btn btn-danger btn-sm" onclick="quickRefuse('${d.id}')">✕</button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        async function quickValidate(demandeId, articleId, quantite, demandeur) {
+            const article = articles.find(a => a.id === articleId);
+            if (!article) {
+                showToast('Article non trouvé', 'error');
+                return;
+            }
+            
+            const nouvelleQuantite = article.quantite_stock - quantite;
+            if (nouvelleQuantite < 0) {
+                showToast('Stock insuffisant', 'error');
+                return;
+            }
+
+            try {
+                await fetch(API_BASE_URL + '/admin', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        action: 'valider',
+                        demande_id: demandeId,
+                        article_id: articleId,
+                        nouvelle_quantite: nouvelleQuantite,
+                        quantite: quantite,
+                        demandeur: demandeur,
+                        commentaire: 'Validé depuis admin'
+                    })
+                });
+                showToast('Demande validée', 'success');
+                loadDemandes();
+                loadDashboard();
+            } catch (error) {
+                showToast('Erreur', 'error');
+            }
+        }
+
+        async function quickRefuse(demandeId) {
+            if (!confirm('Refuser cette demande ?')) return;
+            try {
+                await fetch(API_BASE_URL + '/admin', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ action: 'refuser', demande_id: demandeId })
+                });
+                showToast('Demande refusée', 'success');
+                loadDemandes();
+                loadDashboard();
+            } catch (error) {
+                showToast('Erreur', 'error');
+            }
+        }
+
+        /* ============================================================
+           MOUVEMENTS
+           ============================================================ */
+        async function loadMouvements() {
+            try {
+                const response = await fetch(API_BASE_URL + '/admin', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ action: 'historique' })
+                });
+                mouvements = await response.json();
+                renderMouvementsTable();
+            } catch (error) {
+                console.error('Erreur:', error);
+            }
+        }
+
+        function renderMouvementsTable() {
+            const tbody = document.getElementById('mouvementsTableBody');
+            if (!Array.isArray(mouvements) || mouvements.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" class="table-empty">Aucun mouvement</td></tr>';
+                return;
+            }
+            
+            tbody.innerHTML = mouvements.map(m => {
+                const article = articles.find(a => a.id === m.article_id);
+                const typeLabel = m.type === 'entree' ? 'Entrée' : m.type === 'sortie' ? 'Sortie' : 'Retour';
+                const typeClass = m.type === 'entree' ? 'badge-success' : m.type === 'sortie' ? 'badge-danger' : 'badge-warning';
+                return `
+                    <tr>
+                        <td>${new Date(m.date).toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' })}</td>
+                        <td><span class="badge ${typeClass}">${typeLabel}</span></td>
+                        <td>${article ? article.nom : m.article_id}</td>
+                        <td>${m.type === 'sortie' ? '-' : '+'}${m.quantite}</td>
+                        <td>${m.effectue_par}</td>
+                        <td>${m.commentaire || '-'}</td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        function openMouvementModal(type) {
+            document.getElementById('mouvementModalTitle').textContent = type === 'entree' ? 'Entrée de stock' : 'Enregistrer un retour';
+            document.getElementById('mouvementType').value = type;
+            document.getElementById('mouvementSubmitBtn').className = type === 'entree' ? 'btn btn-success' : 'btn btn-secondary';
+            
+            // Populate articles dropdown
+            const select = document.getElementById('mouvementArticle');
+            select.innerHTML = '<option value="">Sélectionner un article</option>' +
+                articles.map(a => `<option value="${a.id}" data-stock="${a.quantite_stock}">${a.nom} (Stock: ${a.quantite_stock})</option>`).join('');
+            
+            document.getElementById('mouvementQuantite').value = 1;
+            document.getElementById('mouvementPar').value = '';
+            document.getElementById('mouvementCommentaire').value = '';
+            
+            openModal('mouvementModal');
+        }
+
+        async function saveMouvement() {
+            const type = document.getElementById('mouvementType').value;
+            const articleId = document.getElementById('mouvementArticle').value;
+            const quantite = parseInt(document.getElementById('mouvementQuantite').value);
+            const effectuePar = document.getElementById('mouvementPar').value;
+            const commentaire = document.getElementById('mouvementCommentaire').value;
+
+            if (!articleId || !quantite || !effectuePar) {
+                showToast('Remplir tous les champs', 'error');
+                return;
+            }
+
+            const article = articles.find(a => a.id === articleId);
+            const nouvelleQuantite = type === 'entree' || type === 'retour' 
+                ? article.quantite_stock + quantite 
+                : article.quantite_stock - quantite;
+
+            try {
+                await fetch(API_BASE_URL + '/admin', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        action: type,
+                        article_id: articleId,
+                        quantite: quantite,
+                        nouvelle_quantite: nouvelleQuantite,
+                        effectue_par: effectuePar,
+                        commentaire: commentaire
+                    })
+                });
+                closeModal('mouvementModal');
+                showToast(type === 'entree' ? 'Entrée enregistrée' : 'Retour enregistré', 'success');
+                loadMouvements();
+                loadArticles();
+            } catch (error) {
+                showToast('Erreur', 'error');
+            }
+        }
+
+        /* ============================================================
+           MODALS & TOAST
+           ============================================================ */
+        function openModal(id) {
+            document.getElementById(id).classList.add('active');
+        }
+
+        function closeModal(id) {
+            document.getElementById(id).classList.remove('active');
+        }
+
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('toast');
+            document.getElementById('toastMessage').textContent = message;
+            toast.className = 'toast ' + type + ' active';
+            setTimeout(() => toast.classList.remove('active'), 3000);
+        }
+    </script>
+</body>
+</html>
