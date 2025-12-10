@@ -1,0 +1,1044 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Catalogue Inventaire</title>
+    
+    <!-- ============================================================
+         CATALOGUE INVENTAIRE - INTERFACE COLLEGUES
+         ============================================================
+         
+         DESCRIPTION:
+         Interface de consultation du catalogue pour les collègues.
+         Permet de rechercher des articles, voir les emplacements,
+         et envoyer des demandes de sortie.
+         
+         STRUCTURE DU FICHIER:
+         1. STYLES CSS (ligne ~30) - Variables, Header, Sidebar, Grille, Modal
+         2. HTML (ligne ~600) - Header, Sidebar, Grille, Modal, Toast
+         3. JAVASCRIPT (ligne ~800) - Config API, Données démo, Fonctions
+         
+         CONFIGURATION:
+         - Modifier API_BASE_URL avec ton URL n8n
+         ============================================================ -->
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Mono:wght@700&display=swap" rel="stylesheet">
+    
+    <style>
+        /* ============================================================
+           1. RESET ET VARIABLES GLOBALES
+           ============================================================ */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        /* PALETTE DE COULEURS - Modifier ici pour changer le thème */
+        :root {
+            --bg-primary: #0d0d0d;
+            --bg-secondary: #1a1a1a;
+            --bg-card: #242424;
+            --bg-card-hover: #2d2d2d;
+            --text-primary: #ffffff;
+            --text-secondary: #a0a0a0;
+            --text-muted: #666666;
+            --accent: #ff6b35;
+            --accent-hover: #ff8555;
+            --success: #4ade80;
+            --warning: #fbbf24;
+            --danger: #ef4444;
+            --border: #333333;
+        }
+
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            line-height: 1.6;
+        }
+
+        /* ============================================================
+           2. HEADER ET RECHERCHE
+           ============================================================ */
+        .header {
+            background: var(--bg-secondary);
+            border-bottom: 1px solid var(--border);
+            padding: 1rem 2rem;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .header-content {
+            max-width: 1600px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+            flex-wrap: wrap;
+        }
+        .logo {
+            font-family: 'Space Mono', monospace;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--accent);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+        .logo span { color: var(--text-primary); }
+        .search-container {
+            flex: 1;
+            max-width: 500px;
+            position: relative;
+        }
+        .search-input {
+            width: 100%;
+            padding: 0.875rem 1.25rem 0.875rem 3rem;
+            background: var(--bg-primary);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--text-primary);
+            font-size: 0.95rem;
+            font-family: inherit;
+            transition: all 0.2s ease;
+        }
+        .search-input:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
+        .search-input::placeholder { color: var(--text-muted); }
+        .search-icon {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+        }
+
+        /* ============================================================
+           3. LAYOUT PRINCIPAL
+           ============================================================ */
+        .main-container {
+            max-width: 1600px;
+            margin: 0 auto;
+            display: flex;
+            gap: 2rem;
+            padding: 2rem;
+        }
+
+        /* ============================================================
+           4. SIDEBAR - FILTRES
+           ============================================================ */
+        .sidebar { width: 280px; flex-shrink: 0; }
+        .filter-section {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+        }
+        .filter-title {
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-muted);
+            margin-bottom: 1rem;
+        }
+        .filter-select {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            background: var(--bg-primary);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            color: var(--text-primary);
+            font-size: 0.9rem;
+            font-family: inherit;
+            cursor: pointer;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23666666' stroke-width='2'%3E%3Cpolyline points='6,9 12,15 18,9'%3E%3C/polyline%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 1rem center;
+        }
+        .filter-select:focus { outline: none; border-color: var(--accent); }
+        .filter-select option { background: var(--bg-secondary); color: var(--text-primary); }
+        .reset-filters {
+            width: 100%;
+            padding: 0.75rem;
+            background: transparent;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+            font-family: inherit;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .reset-filters:hover { background: var(--bg-card); color: var(--text-primary); }
+
+        /* ============================================================
+           5. STATISTIQUES
+           ============================================================ */
+        .stats-bar { display: flex; gap: 1rem; margin-bottom: 1rem; }
+        .stat-item {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 0.75rem 1rem;
+            text-align: center;
+            flex: 1;
+        }
+        .stat-value { font-size: 1.5rem; font-weight: 700; color: var(--accent); }
+        .stat-label { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); }
+
+        /* ============================================================
+           6. ZONE DE CONTENU
+           ============================================================ */
+        .content { flex: 1; min-width: 0; }
+        .results-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+        .results-count { font-size: 0.9rem; color: var(--text-secondary); }
+        .results-count strong { color: var(--text-primary); }
+
+        /* ============================================================
+           7. GRILLE DES ARTICLES
+           ============================================================ */
+        .articles-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+            gap: 1.25rem;
+        }
+        .article-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .article-card:hover {
+            transform: translateY(-4px);
+            border-color: var(--accent);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
+        }
+        .article-image {
+            aspect-ratio: 1;
+            background: var(--bg-secondary);
+            overflow: hidden;
+            position: relative;
+        }
+        .article-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s ease;
+        }
+        .article-card:hover .article-image img { transform: scale(1.05); }
+        
+        /* BADGES DE STOCK */
+        .article-stock-badge {
+            position: absolute;
+            top: 0.75rem;
+            right: 0.75rem;
+            padding: 0.35rem 0.65rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+        .stock-ok { background: rgba(74, 222, 128, 0.2); color: var(--success); }
+        .stock-low { background: rgba(251, 191, 36, 0.2); color: var(--warning); }
+        .stock-empty { background: rgba(239, 68, 68, 0.2); color: var(--danger); }
+        
+        .article-info { padding: 1rem; }
+        .article-category {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--accent);
+            margin-bottom: 0.35rem;
+        }
+        .article-name {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+            line-height: 1.3;
+        }
+        .article-location {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+
+        /* ============================================================
+           8. MODAL DETAIL ARTICLE
+           ============================================================ */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.85);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+        .modal-overlay.active { opacity: 1; visibility: visible; }
+        .modal {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            max-width: 900px;
+            width: 100%;
+            max-height: 90vh;
+            overflow: hidden;
+            display: flex;
+            transform: scale(0.95);
+            transition: transform 0.3s ease;
+        }
+        .modal-overlay.active .modal { transform: scale(1); }
+        .modal-image {
+            width: 45%;
+            background: var(--bg-primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .modal-image img { width: 100%; height: 100%; object-fit: cover; }
+        .modal-content {
+            flex: 1;
+            padding: 2rem;
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+        }
+        .modal-close {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            width: 40px;
+            height: 40px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 50%;
+            color: var(--text-secondary);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .modal-close:hover { background: var(--bg-card-hover); color: var(--text-primary); }
+        .modal-category {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--accent);
+            margin-bottom: 0.5rem;
+        }
+        .modal-title {
+            font-size: 1.75rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            line-height: 1.2;
+        }
+        .modal-details {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+        .detail-row {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem;
+            background: var(--bg-primary);
+            border-radius: 8px;
+        }
+        .detail-icon {
+            width: 40px;
+            height: 40px;
+            background: var(--bg-card);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--accent);
+        }
+        .detail-info { flex: 1; }
+        .detail-label {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-muted);
+        }
+        .detail-value { font-size: 1.1rem; font-weight: 600; color: var(--text-primary); }
+        .detail-value.success { color: var(--success); }
+        .detail-value.warning { color: var(--warning); }
+        .detail-value.danger { color: var(--danger); }
+
+        /* ============================================================
+           9. FORMULAIRE DE DEMANDE
+           ============================================================ */
+        .request-section {
+            margin-top: auto;
+            padding-top: 1.5rem;
+            border-top: 1px solid var(--border);
+        }
+        .request-title { font-size: 0.9rem; font-weight: 600; margin-bottom: 1rem; }
+        .request-form { display: flex; flex-direction: column; gap: 1rem; }
+        .form-row { display: flex; gap: 1rem; }
+        .form-group { flex: 1; }
+        .form-label {
+            display: block;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-muted);
+            margin-bottom: 0.5rem;
+        }
+        .form-input {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            background: var(--bg-primary);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            color: var(--text-primary);
+            font-size: 0.9rem;
+            font-family: inherit;
+        }
+        .form-input:focus { outline: none; border-color: var(--accent); }
+        .btn-request {
+            padding: 1rem 2rem;
+            background: var(--accent);
+            border: none;
+            border-radius: 8px;
+            color: white;
+            font-size: 1rem;
+            font-weight: 600;
+            font-family: inherit;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .btn-request:hover { background: var(--accent-hover); }
+        .btn-request:disabled { background: var(--bg-card); color: var(--text-muted); cursor: not-allowed; }
+
+        /* ============================================================
+           10. ETATS CHARGEMENT ET VIDE
+           ============================================================ */
+        .loading { text-align: center; padding: 4rem; color: var(--text-muted); }
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid var(--border);
+            border-top-color: var(--accent);
+            border-radius: 50%;
+            margin: 0 auto 1rem;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .empty-state { text-align: center; padding: 4rem 2rem; }
+        .empty-icon {
+            width: 80px;
+            height: 80px;
+            background: var(--bg-card);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1.5rem;
+            color: var(--text-muted);
+        }
+        .empty-title { font-size: 1.25rem; font-weight: 600; margin-bottom: 0.5rem; }
+        .empty-text { color: var(--text-secondary); }
+
+        /* ============================================================
+           11. BOUTON FILTRES MOBILE
+           ============================================================ */
+        .mobile-filter-toggle {
+            display: none;
+            padding: 0.75rem 1rem;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--text-primary);
+            font-size: 0.9rem;
+            font-family: inherit;
+            cursor: pointer;
+            margin-bottom: 1rem;
+            width: 100%;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        /* ============================================================
+           12. RESPONSIVE MOBILE
+           ============================================================ */
+        @media (max-width: 768px) {
+            .header { padding: 1rem; }
+            .logo { font-size: 1.2rem; }
+            .search-container { order: 3; width: 100%; max-width: none; }
+            .main-container { flex-direction: column; padding: 1rem; gap: 1rem; }
+            .sidebar { width: 100%; display: none; }
+            .sidebar.active { display: block; }
+            .mobile-filter-toggle { display: flex; }
+            .modal { flex-direction: column; max-height: 95vh; }
+            .modal-image { width: 100%; height: 250px; }
+            .articles-grid { grid-template-columns: repeat(2, 1fr); gap: 0.75rem; }
+            .article-info { padding: 0.75rem; }
+            .article-name { font-size: 0.9rem; }
+        }
+
+        /* ============================================================
+           13. TOAST NOTIFICATION
+           ============================================================ */
+        .toast {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            padding: 1rem 1.5rem;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            transform: translateY(100px);
+            opacity: 0;
+            transition: all 0.3s ease;
+            z-index: 1100;
+        }
+        .toast.active { transform: translateY(0); opacity: 1; }
+        .toast.success { border-color: var(--success); }
+        .toast.error { border-color: var(--danger); }
+        .toast-icon { width: 24px; height: 24px; }
+        .toast.success .toast-icon { color: var(--success); }
+        .toast.error .toast-icon { color: var(--danger); }
+    </style>
+</head>
+<body>
+    <!-- ============================================================
+         HEADER - Logo et recherche
+         ============================================================ -->
+    <header class="header">
+        <div class="header-content">
+            <!-- LOGO - Modifier le texte ici -->
+            <div class="logo">Stock<span>Pro</span></div>
+            
+            <!-- Barre de recherche -->
+            <div class="search-container">
+                <svg class="search-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                </svg>
+                <input type="text" class="search-input" id="searchInput" placeholder="Rechercher un article...">
+            </div>
+        </div>
+    </header>
+
+    <!-- ============================================================
+         CONTENU PRINCIPAL
+         ============================================================ -->
+    <div class="main-container">
+        
+        <!-- Bouton filtres mobile -->
+        <button class="mobile-filter-toggle" id="filterToggle">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="4" y1="6" x2="20" y2="6"></line>
+                <line x1="4" y1="12" x2="14" y2="12"></line>
+                <line x1="4" y1="18" x2="10" y2="18"></line>
+            </svg>
+            Filtres
+        </button>
+
+        <!-- ============================================================
+             SIDEBAR - FILTRES
+             ============================================================ -->
+        <aside class="sidebar" id="sidebar">
+            <div class="filter-section">
+                <div class="filter-title">Catégorie</div>
+                <select class="filter-select" id="filterCategory">
+                    <option value="">Toutes les catégories</option>
+                </select>
+            </div>
+
+            <div class="filter-section">
+                <div class="filter-title">Sous-catégorie</div>
+                <select class="filter-select" id="filterSubcategory">
+                    <option value="">Toutes</option>
+                </select>
+            </div>
+
+            <div class="filter-section">
+                <div class="filter-title">Emplacement</div>
+                <select class="filter-select" id="filterLocation">
+                    <option value="">Tous les emplacements</option>
+                </select>
+            </div>
+
+            <div class="filter-section">
+                <div class="filter-title">Disponibilité</div>
+                <select class="filter-select" id="filterStock">
+                    <option value="">Tout</option>
+                    <option value="available">En stock</option>
+                    <option value="low">Stock bas</option>
+                    <option value="empty">Rupture</option>
+                </select>
+            </div>
+
+            <button class="reset-filters" id="resetFilters">Réinitialiser les filtres</button>
+
+            <!-- Statistiques -->
+            <div class="stats-bar" style="margin-top: 1.5rem;">
+                <div class="stat-item">
+                    <div class="stat-value" id="totalArticles">0</div>
+                    <div class="stat-label">Articles</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="totalStock">0</div>
+                    <div class="stat-label">En stock</div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- ============================================================
+             GRILLE D'ARTICLES
+             ============================================================ -->
+        <main class="content">
+            <div class="results-header">
+                <div class="results-count">
+                    <strong id="resultsCount">0</strong> résultats
+                </div>
+            </div>
+
+            <div class="articles-grid" id="articlesGrid"></div>
+
+            <div class="loading" id="loading" style="display: none;">
+                <div class="spinner"></div>
+                <p>Chargement...</p>
+            </div>
+
+            <div class="empty-state" id="emptyState" style="display: none;">
+                <div class="empty-icon">
+                    <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                        <circle cx="11" cy="11" r="8"></circle>
+                        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                    </svg>
+                </div>
+                <h3 class="empty-title">Aucun article trouvé</h3>
+                <p class="empty-text">Essayez de modifier vos filtres</p>
+            </div>
+        </main>
+    </div>
+
+    <!-- ============================================================
+         MODAL - DETAIL ARTICLE
+         ============================================================ -->
+    <div class="modal-overlay" id="modalOverlay">
+        <div class="modal">
+            <button class="modal-close" id="modalClose">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+            </button>
+            
+            <div class="modal-image">
+                <img id="modalImage" src="" alt="">
+            </div>
+            
+            <div class="modal-content">
+                <div class="modal-category" id="modalCategory"></div>
+                <h2 class="modal-title" id="modalTitle"></h2>
+                
+                <div class="modal-details">
+                    <!-- Emplacement -->
+                    <div class="detail-row">
+                        <div class="detail-icon">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                                <circle cx="12" cy="10" r="3"></circle>
+                            </svg>
+                        </div>
+                        <div class="detail-info">
+                            <div class="detail-label">Emplacement</div>
+                            <div class="detail-value" id="modalLocation"></div>
+                        </div>
+                    </div>
+                    <!-- Stock -->
+                    <div class="detail-row">
+                        <div class="detail-icon">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+                            </svg>
+                        </div>
+                        <div class="detail-info">
+                            <div class="detail-label">Stock disponible</div>
+                            <div class="detail-value" id="modalStock"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- FORMULAIRE DE DEMANDE -->
+                <div class="request-section">
+                    <h4 class="request-title">Demander cet article</h4>
+                    <form class="request-form" id="requestForm">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label">Votre nom</label>
+                                <input type="text" class="form-input" id="requestName" placeholder="Ex: Jean" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Quantité</label>
+                                <input type="number" class="form-input" id="requestQuantity" min="1" value="1" required>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Commentaire (optionnel)</label>
+                            <input type="text" class="form-input" id="requestComment" placeholder="Ex: Pour le shooting client X">
+                        </div>
+                        <button type="submit" class="btn-request" id="btnRequest">Envoyer la demande</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- TOAST NOTIFICATION -->
+    <div class="toast" id="toast">
+        <svg class="toast-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+            <polyline points="22 4 12 14.01 9 11.01"></polyline>
+        </svg>
+        <span id="toastMessage"></span>
+    </div>
+
+    <!-- ============================================================
+         JAVASCRIPT
+         ============================================================ -->
+    <script>
+        /* ============================================================
+           CONFIGURATION API
+           Modifier cette URL avec ton webhook n8n
+           ============================================================ */
+        const API_BASE_URL = 'https://ton-instance-n8n.com/webhook';
+
+        /* ============================================================
+           ETAT DE L'APPLICATION
+           ============================================================ */
+        let articles = [];
+        let currentArticle = null;
+
+        /* ============================================================
+           REFERENCES DOM
+           ============================================================ */
+        const searchInput = document.getElementById('searchInput');
+        const filterCategory = document.getElementById('filterCategory');
+        const filterSubcategory = document.getElementById('filterSubcategory');
+        const filterLocation = document.getElementById('filterLocation');
+        const filterStock = document.getElementById('filterStock');
+        const resetFilters = document.getElementById('resetFilters');
+        const articlesGrid = document.getElementById('articlesGrid');
+        const resultsCount = document.getElementById('resultsCount');
+        const totalArticles = document.getElementById('totalArticles');
+        const totalStock = document.getElementById('totalStock');
+        const loading = document.getElementById('loading');
+        const emptyState = document.getElementById('emptyState');
+        const modalOverlay = document.getElementById('modalOverlay');
+        const modalClose = document.getElementById('modalClose');
+        const requestForm = document.getElementById('requestForm');
+        const filterToggle = document.getElementById('filterToggle');
+        const sidebar = document.getElementById('sidebar');
+
+        /* ============================================================
+           DONNEES DE DEMONSTRATION
+           Supprimer ce bloc une fois l'API connectée
+           ============================================================ */
+        const demoData = [
+            { id: 1, nom: "Costume noir classique", categorie: "Costumes", sous_categorie: "Classiques", emplacement: "Malle 1 - Dépôt A", image_url: "https://images.unsplash.com/photo-1594938298603-c8148c4dae35?w=400", quantite_stock: 5, seuil_alerte: 2 },
+            { id: 2, nom: "Costume bleu marine", categorie: "Costumes", sous_categorie: "Classiques", emplacement: "Malle 1 - Dépôt A", image_url: "https://images.unsplash.com/photo-1507679799987-c73779587ccf?w=400", quantite_stock: 3, seuil_alerte: 2 },
+            { id: 3, nom: "Costume gris anthracite", categorie: "Costumes", sous_categorie: "Classiques", emplacement: "Malle 2 - Dépôt A", image_url: "https://images.unsplash.com/photo-1593030761757-71fae45fa0e7?w=400", quantite_stock: 1, seuil_alerte: 2 },
+            { id: 4, nom: "Cravate rouge soie", categorie: "Cravates", sous_categorie: "Soie", emplacement: "Malle 5 - Dépôt B", image_url: "https://images.unsplash.com/photo-1589756823695-278bc923f962?w=400", quantite_stock: 12, seuil_alerte: 5 },
+            { id: 5, nom: "Cravate bleue rayée", categorie: "Cravates", sous_categorie: "Rayées", emplacement: "Malle 5 - Dépôt B", image_url: "https://images.unsplash.com/photo-1598033129183-c4f50c736f10?w=400", quantite_stock: 8, seuil_alerte: 5 },
+            { id: 6, nom: "Cravate noire unie", categorie: "Cravates", sous_categorie: "Unies", emplacement: "Malle 6 - Dépôt B", image_url: "https://images.unsplash.com/photo-1598032895397-b9472444bf93?w=400", quantite_stock: 0, seuil_alerte: 5 },
+            { id: 7, nom: "Richelieu noir cuir", categorie: "Chaussures", sous_categorie: "Richelieu", emplacement: "Malle 10 - Dépôt C", image_url: "https://images.unsplash.com/photo-1614252369475-531eba835eb1?w=400", quantite_stock: 4, seuil_alerte: 2 },
+            { id: 8, nom: "Mocassin marron", categorie: "Chaussures", sous_categorie: "Mocassins", emplacement: "Malle 11 - Dépôt C", image_url: "https://images.unsplash.com/photo-1533867617858-e7b97e060509?w=400", quantite_stock: 2, seuil_alerte: 2 },
+            { id: 9, nom: "Derby bordeaux", categorie: "Chaussures", sous_categorie: "Derby", emplacement: "Malle 10 - Dépôt C", image_url: "https://images.unsplash.com/photo-1608256246200-53e635b5b65f?w=400", quantite_stock: 6, seuil_alerte: 2 },
+            { id: 10, nom: "Bottines chelsea noires", categorie: "Chaussures", sous_categorie: "Bottines", emplacement: "Malle 12 - Dépôt C", image_url: "https://images.unsplash.com/photo-1638247025967-b4e38f787b76?w=400", quantite_stock: 3, seuil_alerte: 2 },
+        ];
+
+        /* ============================================================
+           INITIALISATION
+           ============================================================ */
+        document.addEventListener('DOMContentLoaded', () => {
+            loadArticles();
+            setupEventListeners();
+        });
+
+        /* ============================================================
+           CONFIGURATION DES EVENEMENTS
+           ============================================================ */
+        function setupEventListeners() {
+            searchInput.addEventListener('input', debounce(filterArticles, 300));
+            filterCategory.addEventListener('change', onCategoryChange);
+            filterSubcategory.addEventListener('change', filterArticles);
+            filterLocation.addEventListener('change', filterArticles);
+            filterStock.addEventListener('change', filterArticles);
+            resetFilters.addEventListener('click', resetAllFilters);
+            modalClose.addEventListener('click', closeModal);
+            modalOverlay.addEventListener('click', (e) => { if (e.target === modalOverlay) closeModal(); });
+            requestForm.addEventListener('submit', handleRequest);
+            filterToggle.addEventListener('click', () => { sidebar.classList.toggle('active'); });
+        }
+
+        /* ============================================================
+           CHARGEMENT DES ARTICLES
+           ============================================================ */
+        async function loadArticles() {
+            showLoading(true);
+            try {
+                // EN PRODUCTION: Décommenter
+                // const response = await fetch(API_BASE_URL + '/catalogue?action=articles');
+                // articles = await response.json();
+                
+                // DEMO
+                await new Promise(resolve => setTimeout(resolve, 500));
+                articles = demoData;
+                
+                populateFilters();
+                renderArticles(articles);
+                updateStats();
+            } catch (error) {
+                console.error('Erreur:', error);
+                showToast('Erreur de chargement', 'error');
+            } finally {
+                showLoading(false);
+            }
+        }
+
+        /* ============================================================
+           REMPLISSAGE DES FILTRES
+           ============================================================ */
+        function populateFilters() {
+            const uniqueCategories = [...new Set(articles.map(a => a.categorie))];
+            filterCategory.innerHTML = '<option value="">Toutes les catégories</option>';
+            uniqueCategories.forEach(cat => {
+                filterCategory.innerHTML += '<option value="' + cat + '">' + cat + '</option>';
+            });
+
+            const uniqueLocations = [...new Set(articles.map(a => a.emplacement))];
+            filterLocation.innerHTML = '<option value="">Tous les emplacements</option>';
+            uniqueLocations.forEach(loc => {
+                filterLocation.innerHTML += '<option value="' + loc + '">' + loc + '</option>';
+            });
+        }
+
+        /* ============================================================
+           CHANGEMENT DE CATEGORIE
+           ============================================================ */
+        function onCategoryChange() {
+            const selectedCategory = filterCategory.value;
+            const relevantArticles = selectedCategory 
+                ? articles.filter(a => a.categorie === selectedCategory)
+                : articles;
+            
+            const uniqueSubcategories = [...new Set(relevantArticles.map(a => a.sous_categorie))];
+            filterSubcategory.innerHTML = '<option value="">Toutes</option>';
+            uniqueSubcategories.forEach(sub => {
+                filterSubcategory.innerHTML += '<option value="' + sub + '">' + sub + '</option>';
+            });
+            filterArticles();
+        }
+
+        /* ============================================================
+           FILTRAGE DES ARTICLES
+           ============================================================ */
+        function filterArticles() {
+            const search = searchInput.value.toLowerCase();
+            const category = filterCategory.value;
+            const subcategory = filterSubcategory.value;
+            const location = filterLocation.value;
+            const stock = filterStock.value;
+
+            let filtered = articles.filter(article => {
+                const matchSearch = !search || 
+                    article.nom.toLowerCase().includes(search) ||
+                    article.categorie.toLowerCase().includes(search) ||
+                    article.emplacement.toLowerCase().includes(search);
+                const matchCategory = !category || article.categorie === category;
+                const matchSubcategory = !subcategory || article.sous_categorie === subcategory;
+                const matchLocation = !location || article.emplacement === location;
+                let matchStock = true;
+                if (stock === 'available') matchStock = article.quantite_stock > article.seuil_alerte;
+                if (stock === 'low') matchStock = article.quantite_stock > 0 && article.quantite_stock <= article.seuil_alerte;
+                if (stock === 'empty') matchStock = article.quantite_stock === 0;
+                return matchSearch && matchCategory && matchSubcategory && matchLocation && matchStock;
+            });
+            renderArticles(filtered);
+        }
+
+        /* ============================================================
+           AFFICHAGE DES ARTICLES
+           ============================================================ */
+        function renderArticles(articlesToRender) {
+            resultsCount.textContent = articlesToRender.length;
+            if (articlesToRender.length === 0) {
+                articlesGrid.innerHTML = '';
+                emptyState.style.display = 'block';
+                return;
+            }
+            emptyState.style.display = 'none';
+            articlesGrid.innerHTML = articlesToRender.map(article => 
+                '<div class="article-card" onclick="openModal(' + article.id + ')">' +
+                    '<div class="article-image">' +
+                        '<img src="' + article.image_url + '" alt="' + article.nom + '" loading="lazy">' +
+                        '<span class="article-stock-badge ' + getStockClass(article) + '">' + getStockLabel(article) + '</span>' +
+                    '</div>' +
+                    '<div class="article-info">' +
+                        '<div class="article-category">' + article.categorie + '</div>' +
+                        '<h3 class="article-name">' + article.nom + '</h3>' +
+                        '<div class="article-location">' +
+                            '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>' +
+                            article.emplacement +
+                        '</div>' +
+                    '</div>' +
+                '</div>'
+            ).join('');
+        }
+
+        /* ============================================================
+           FONCTIONS STOCK
+           ============================================================ */
+        function getStockClass(article) {
+            if (article.quantite_stock === 0) return 'stock-empty';
+            if (article.quantite_stock <= article.seuil_alerte) return 'stock-low';
+            return 'stock-ok';
+        }
+        function getStockLabel(article) {
+            if (article.quantite_stock === 0) return 'Rupture';
+            if (article.quantite_stock <= article.seuil_alerte) return article.quantite_stock + ' restant' + (article.quantite_stock > 1 ? 's' : '');
+            return article.quantite_stock + ' en stock';
+        }
+
+        /* ============================================================
+           MODAL
+           ============================================================ */
+        function openModal(articleId) {
+            currentArticle = articles.find(a => a.id === articleId);
+            if (!currentArticle) return;
+
+            document.getElementById('modalImage').src = currentArticle.image_url;
+            document.getElementById('modalCategory').textContent = currentArticle.categorie + ' / ' + currentArticle.sous_categorie;
+            document.getElementById('modalTitle').textContent = currentArticle.nom;
+            document.getElementById('modalLocation').textContent = currentArticle.emplacement;
+            
+            const stockEl = document.getElementById('modalStock');
+            stockEl.textContent = currentArticle.quantite_stock + ' unité' + (currentArticle.quantite_stock > 1 ? 's' : '');
+            stockEl.className = 'detail-value ' + (
+                currentArticle.quantite_stock === 0 ? 'danger' :
+                currentArticle.quantite_stock <= currentArticle.seuil_alerte ? 'warning' : 'success'
+            );
+
+            const btnRequest = document.getElementById('btnRequest');
+            btnRequest.disabled = currentArticle.quantite_stock === 0;
+            btnRequest.textContent = currentArticle.quantite_stock === 0 ? 'Stock épuisé' : 'Envoyer la demande';
+            document.getElementById('requestQuantity').max = currentArticle.quantite_stock;
+
+            modalOverlay.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeModal() {
+            modalOverlay.classList.remove('active');
+            document.body.style.overflow = '';
+            currentArticle = null;
+            requestForm.reset();
+        }
+
+        /* ============================================================
+           ENVOI DEMANDE
+           ============================================================ */
+        async function handleRequest(e) {
+            e.preventDefault();
+            const name = document.getElementById('requestName').value;
+            const quantity = parseInt(document.getElementById('requestQuantity').value);
+            const comment = document.getElementById('requestComment').value;
+
+            if (quantity > currentArticle.quantite_stock) {
+                showToast('Quantité supérieure au stock', 'error');
+                return;
+            }
+
+            const btnRequest = document.getElementById('btnRequest');
+            btnRequest.disabled = true;
+            btnRequest.textContent = 'Envoi en cours...';
+
+            try {
+                // EN PRODUCTION: Décommenter
+                // await fetch(API_BASE_URL + '/catalogue?action=demande', {
+                //     method: 'POST',
+                //     headers: { 'Content-Type': 'application/json' },
+                //     body: JSON.stringify({ article_id: currentArticle.id, demandeur: name, quantite: quantity, commentaire: comment })
+                // });
+                
+                await new Promise(resolve => setTimeout(resolve, 1000));
+                showToast('Demande envoyée !', 'success');
+                closeModal();
+            } catch (error) {
+                showToast('Erreur', 'error');
+            } finally {
+                btnRequest.disabled = false;
+                btnRequest.textContent = 'Envoyer la demande';
+            }
+        }
+
+        /* ============================================================
+           UTILITAIRES
+           ============================================================ */
+        function resetAllFilters() {
+            searchInput.value = '';
+            filterCategory.value = '';
+            filterSubcategory.innerHTML = '<option value="">Toutes</option>';
+            filterLocation.value = '';
+            filterStock.value = '';
+            renderArticles(articles);
+        }
+
+        function updateStats() {
+            totalArticles.textContent = articles.length;
+            totalStock.textContent = articles.reduce((sum, a) => sum + a.quantite_stock, 0);
+        }
+
+        function showLoading(show) {
+            loading.style.display = show ? 'block' : 'none';
+            articlesGrid.style.display = show ? 'none' : 'grid';
+        }
+
+        function showToast(message, type) {
+            const toast = document.getElementById('toast');
+            document.getElementById('toastMessage').textContent = message;
+            toast.className = 'toast ' + type + ' active';
+            setTimeout(() => { toast.classList.remove('active'); }, 3000);
+        }
+
+        function debounce(func, wait) {
+            let timeout;
+            return function(...args) {
+                clearTimeout(timeout);
+                timeout = setTimeout(() => func(...args), wait);
+            };
+        }
+    </script>
+</body>
+</html>
