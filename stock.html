@@ -732,7 +732,7 @@
            CONFIGURATION API
            Modifier cette URL avec ton webhook n8n
            ============================================================ */
-        const API_BASE_URL = 'https://ton-instance-n8n.com/webhook';
+        const API_BASE_URL = 'https://n8n.srv1090700.hstgr.cloud/webhook';
 
         /* ============================================================
            ETAT DE L'APPLICATION
@@ -808,13 +808,9 @@
         async function loadArticles() {
             showLoading(true);
             try {
-                // EN PRODUCTION: Décommenter
-                // const response = await fetch(API_BASE_URL + '/catalogue?action=articles');
-                // articles = await response.json();
-                
-                // DEMO
-                await new Promise(resolve => setTimeout(resolve, 500));
-                articles = demoData;
+                // APPEL API REEL
+                const response = await fetch(API_BASE_URL + '/catalogue?action=articles');
+                articles = await response.json();
                 
                 populateFilters();
                 renderArticles(articles);
@@ -985,14 +981,13 @@
             btnRequest.textContent = 'Envoi en cours...';
 
             try {
-                // EN PRODUCTION: Décommenter
-                // await fetch(API_BASE_URL + '/catalogue?action=demande', {
-                //     method: 'POST',
-                //     headers: { 'Content-Type': 'application/json' },
-                //     body: JSON.stringify({ article_id: currentArticle.id, demandeur: name, quantite: quantity, commentaire: comment })
-                // });
+                // APPEL API REEL
+                await fetch(API_BASE_URL + '/catalogue?action=demande', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ article_id: currentArticle.id, demandeur: name, quantite: quantity, commentaire: comment })
+                });
                 
-                await new Promise(resolve => setTimeout(resolve, 1000));
                 showToast('Demande envoyée !', 'success');
                 closeModal();
             } catch (error) {
