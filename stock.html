@@ -944,7 +944,7 @@
             articlesGrid.innerHTML = articlesToRender.map(article => 
                 '<div class="article-card" onclick="openModal(' + article.id + ')">' +
                     '<div class="article-image">' +
-                        '<img src="' + article.image_url + '" alt="' + article.nom + '" loading="lazy" onclick="previewImage(\'' + article.image_url + '\', event)">' +
+                        '<img src="' + article.image_url + '" alt="' + article.nom + '" loading="lazy">' +
                         '<span class="article-stock-badge ' + getStockClass(article) + '">' + getStockLabel(article) + '</span>' +
                     '</div>' +
                     '<div class="article-info">' +
